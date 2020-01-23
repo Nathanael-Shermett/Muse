@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create an Account{% endblock %}
+
+{% block body %}
+
+	<div class="wrapper">
+		{{ form_start(form) }}
+
+		{{ form_errors(form.username) }}
+		{{ form_widget(form.username, {attr: {placeholder: form.username.vars.name|humanize}}) }}
+
+		{{ form_errors(form.email) }}
+		{{ form_widget(form.email, {attr: {placeholder: form.email.vars.name|humanize}}) }}
+
+		{{ form_errors(form.plainPassword.first) }}
+		{{ form_widget(form.plainPassword.first, {attr: {placeholder: form.plainPassword.first.vars.label|humanize}}) }}
+
+		{{ form_errors(form.plainPassword.second) }}
+		{{ form_widget(form.plainPassword.second, {attr: {placeholder: form.plainPassword.second.vars.label|humanize}}) }}
+
+		<button type="submit">Create Account</button>
+		{{ form_end(form) }}
+	</div>
+
+{% endblock %}

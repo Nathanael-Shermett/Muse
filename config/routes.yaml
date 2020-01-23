@@ -1,0 +1,7 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+base_url:
+  path: /
+  controller: App\Controller\TemplateController::index

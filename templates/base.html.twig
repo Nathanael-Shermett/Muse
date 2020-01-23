@@ -1,0 +1,4 @@
+{% extends app.request.request.get('content_only')
+	? 'naked.html.twig'
+	: 'main.html.twig'
+%}

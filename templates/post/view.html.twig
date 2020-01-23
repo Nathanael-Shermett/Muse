@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block body %}
+
+	{# Shrink the post content area if the post is really short. #}
+	{% if post.content|length <= 10000 %}
+		<div class="wrapper">
+	{% endif %}
+	{# ### #}
+
+	<div class="box no-margin" id="post_content">
+		<div class="article">
+
+			<h1>{{ post.title }}</h1>
+
+			{{ post.content|markdown }}
+		</div>
+	</div>
+
+	{# Shrink the post content area if the post is really short. #}
+	{% if post.content|length <= 10000 %}
+		</div>
+	{% endif %}
+	{# ### #}
+
+	<div class="wrapper">
+		{{ form_start(form) }}
+
+		<div class="write_comment">
+			{{ form_errors(form.content) }}
+			{{ form_widget(form.content, {attr: {class: 'short', placeholder: 'Write your comment here.'}}) }}
+
+			<button type="submit"><span>Submit </span>✔</button>
+		</div>
+		{{ form_end(form) }}
+
+		{% for comment in comments|reverse %}
+			<div class="comment box">
+				<time>{{ comment.timestamp|date("Y-m-d H:i:s")|ago }}</time>
+				<div class="sidebar">
+					<a href="" title="{{ comment.user.username }}">
+						<img src="https://www.gravatar.com/avatar/{{ comment.user.email|md5 }}?r=pg&amp;d=retro&amp;s=75">
+						{{ comment.user.username }}
+					</a>
+				</div>
+				<div class="comment_area">
+					{{ comment.content|markdown }}
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+
+{% endblock %}

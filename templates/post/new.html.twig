@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Post{% endblock %}
+
+{% block body %}
+
+	{{ form_start(form) }}
+
+	{{ form_errors(form.title) }}
+	{{ form_widget(form.title, {attr: {placeholder: form.title.vars.name|humanize}}) }}
+
+	{{ form_errors(form.content) }}
+	{{ form_widget(form.content, {attr: {class: 'tall', placeholder: form.content.vars.name|humanize}}) }}
+
+	{{ form_errors(form.abstract) }}
+	{{ form_widget(form.abstract, {attr: {placeholder: form.abstract.vars.name|humanize ~ ' (optional; 150 characters or less)'}}) }}
+
+	{{ form_errors(form.categories) }}
+	{{ form_widget(form.categories) }}
+
+	<button type="submit">Submit</button>
+	{{ form_end(form) }}
+
+{% endblock %}
+
+{% block js %}
+	<script>
+
+		$('#post_categories').selectize({
+			dropdownDirection : 'up',
+			maxItems : 2,
+			plugins : ['dropdown_direction', 'remove_button'],
+			onInitialize : function ()
+			{
+				var s = this, children = this.revertSettings.$children;
+				if (children.first().is('optgroup')) {
+					children = children.find('option');
+				}
+				children.each(function ()
+				{
+					$.extend(s.options[this.value], $(this).data());
+				});
+			},
+			render : {
+				option : function (item, escape)
+				{
+					let base_url = '{{ url('base_url') }}';
+					return '' +
+						'<div>' +
+						'<img height="30" width="30" src="' + base_url + 'assets/images/icons/' + item.icon + '">' + item.text +
+						'</div>';
+				},
+			},
+		});
+	</script>
+{% endblock %}

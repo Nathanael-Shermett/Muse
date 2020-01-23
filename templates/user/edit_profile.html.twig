@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block body %}
+
+	<div class="wrapper">
+		{{ form_start(form) }}
+
+		{{ form_errors(form.currentPassword) }}
+		{{ form_widget(form.currentPassword, {attr: {placeholder: form.currentPassword.vars.label}}) }}
+
+		<hr />
+
+		{{ form_errors(form.username) }}
+		{{ form_widget(form.username, {attr: {placeholder: form.username.vars.name|humanize}}) }}
+
+		{{ form_errors(form.email) }}
+		{{ form_widget(form.email, {attr: {placeholder: form.email.vars.name|humanize}}) }}
+
+		{{ form_errors(form.plainPassword.first) }}
+		{{ form_widget(form.plainPassword.first, {attr: {placeholder: form.plainPassword.first.vars.label}}) }}
+
+		{{ form_errors(form.plainPassword.second) }}
+		{{ form_widget(form.plainPassword.second, {attr: {placeholder: form.plainPassword.second.vars.label}}) }}
+
+		<button type="submit">Update Account</button>
+		{{ form_end(form) }}
+
+		<hr />
+
+		<form action="{{ path('logout') }}">
+			<button type="submit">Logout</button>
+		</form>
+	</div>
+
+{% endblock %}

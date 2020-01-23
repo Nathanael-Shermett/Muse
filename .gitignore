@@ -1,0 +1,29 @@
+# JetBrains/PhpStorm stuff
+/.idea/
+
+# symfony/framework-bundle
+/assets/build/
+/assets/images/Muse/
+/assets/images/icons/
+/bin/*
+!bin/console
+!bin/symfony_requirements
+/public/build/
+/public/bundles/
+/src/Migrations/*
+!src/Migrations/.gitignore
+/var/
+/vendor/
+
+# symfony/phpunit-bridge
+.phpunit
+/phpunit.xml
+
+# symfony/web-server-bundle
+/.web-server-pid
+
+# symfony/webpack-encore-pack
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
