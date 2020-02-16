@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class PostController extends AbstractController
 {
@@ -20,8 +19,11 @@ class PostController extends AbstractController
 	 * @Route("/post/new", name="new_post")
 	 * @return
 	 */
-	public function new(Request $request, UserInterface $user)
+	public function new(Request $request)
 	{
+		// Get the user.
+		$user = $this->getUser();
+
 		// Get the form categories (so we can pass them to the form).
 		$categories = $this->getDoctrine()->getRepository(PostCategory::class)->findAll();
 
@@ -40,7 +42,7 @@ class PostController extends AbstractController
 			// Data to save.
 			$title = $data['title'];
 			$content = $data['content'];
-			$abstract= $data['abstract'];
+			$abstract = $data['abstract'];
 			$categories[0] = $this->getDoctrine()->getRepository(PostCategory::class)->find($data['categories'][0]);
 			$categories[1] = $this->getDoctrine()->getRepository(PostCategory::class)->find($data['categories'][1]);
 
@@ -69,8 +71,11 @@ class PostController extends AbstractController
 	 * @Route("/post/new_comment/{post}", name="new_comment")
 	 * @return
 	 */
-	public function view($post_id, Request $request, UserInterface $user)
+	public function view($post_id, Request $request)
 	{
+		// Get the user.
+		$user = $this->getUser();
+
 		// Get the post.
 		$post = $this->getDoctrine()->getRepository(Post::class)->find($post_id);
 
