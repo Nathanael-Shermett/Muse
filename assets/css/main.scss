@@ -721,7 +721,7 @@ section#main
 				border:        3px solid $light_beige;
 				height:        75px;
 				margin-bottom: 10px;
-				transition:      all .2s ease-in-out;
+				transition:    all .2s ease-in-out;
 				width:         75px;
 			}
 
@@ -1190,6 +1190,11 @@ section#main
 		-moz-transition:    1s;
 		-webkit-transition: 1s;
 		transition:         1s;
+
+		&:hover a
+		{
+			border-bottom: 1px dashed $medium_beige;
+		}
 
 		a
 		{
