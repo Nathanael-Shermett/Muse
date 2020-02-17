@@ -73,7 +73,7 @@
 				<span>Logged in &nbsp;&rsaquo;&nbsp;</span>
 				<a href="{{ path('edit_profile') }}" data-request-ajax>
 					{{ app.user.username }}
-					<img src="https://www.gravatar.com/avatar/{{ app.user.email|md5 }}?r=pg&amp;d=retro&amp;s=30"
+					<img src="https://www.gravatar.com/avatar/{{ app.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=30"
 						 alt="">
 				</a>
 			</div>
