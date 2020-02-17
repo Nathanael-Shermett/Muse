@@ -96,7 +96,7 @@
 					   value=""
 					   placeholder="Username"
 					   tabindex="1"
-					   required />
+					   required/>
 
 				<label for="password">Password</label>
 				<input type="password"
@@ -104,7 +104,7 @@
 					   name="_password"
 					   placeholder="Password"
 					   tabindex="2"
-					   required />
+					   required/>
 			</form>
 
 		{% endif %}
@@ -117,7 +117,6 @@
 	</div>
 
 	<main>
-
 		<div class="wrapper">
 			{% for type, messages in app.flashes(['success', 'alert', 'error']) %}
 				{% for message in messages %}
@@ -132,9 +131,10 @@
 	</main>
 
 	<footer>
-		Muse &copy; 2019.<br>
-		Designed and developed by <a href="http://nathanael.shermett.me" target="_blank">Nathanael Shermett</a>.<br>
-		Icons provided by <a href="https://icons8.com" target="_blank">Icons8</a>.
+		Muse &copy; 2020.<br>
+		Designed and developed by <a href="http://nathanael.shermett.me" target="Nathanael">Nathanael Shermett</a>.<br>
+		Icons provided by <a href="https://icons8.com" target="Icons8">Icons8</a>.
+		Contribute to us on <a href="https://github.com/Nathanael-Shermett/Muse" target="GitHub">GitHub</a>.
 	</footer>
 </section>
 
@@ -144,16 +144,17 @@
 	// Load an address into <main> rather than navigating to it directly.
 	function load_content_ajax(address, fade_instantly)
 	{
-		if (fade_instantly) {
+		if (fade_instantly)
+		{
 			$('main').fadeTo('fast', .25);
 			$('#loading_icon').fadeTo(500, 1);
 		}
 
 		// Request the page (but only its content).
-		$.post(address, { 'content_only' : true }, function (content)
+		$.post(address, { 'content_only' : true }, function(content)
 		{
 			// Fade out the main content area.
-			$('main').fadeOut(function ()
+			$('main').fadeOut(function()
 			{
 				// Load the new content (and fade the content area back in).
 				$('main').html(content).fadeTo('fast', 1);
@@ -165,10 +166,10 @@
 		});
 	}
 
-	$(document).ready(function ()
+	$(document).ready(function()
 	{
 		// Load links with the [data-request-ajax] attribute via AJAX.
-		$(document).on('click', 'a[data-request-ajax]', function (e)
+		$(document).on('click', 'a[data-request-ajax]', function(e)
 		{
 			// Don't navigate to the link.
 			e.preventDefault();
@@ -187,7 +188,7 @@
 		});
 
 		// If the history state changes (e.g. the "back" button is pressed), load the content via AJAX.
-		$(window).on('popstate', function ()
+		$(window).on('popstate', function()
 		{
 			load_content_ajax(document.location, 0);
 
@@ -196,7 +197,7 @@
 		});
 
 		// If a sidebar link is clicked, give it the "active" class.
-		$(document).on('click', 'a.sidebar_link', function (e)
+		$(document).on('click', 'a.sidebar_link', function(e)
 		{
 			$(this).parent().addClass('active');
 		});
