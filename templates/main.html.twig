@@ -171,20 +171,29 @@
 		// Load links with the [data-request-ajax] attribute via AJAX.
 		$(document).on('click', 'a[data-request-ajax]', function(e)
 		{
-			// Don't navigate to the link.
-			e.preventDefault();
+			// Only change the link behavior if the CTRL, ALT, and SHIFT keys are not pressed. This is to prevent us
+			// from messing up useful browser features (such as CTRL+click to open a link in a new tab).
+			//
+			// Also ensure the loading icon is not visible. If it's visible, it means we're already working on a
+			// navigation request, or that something else otherwise went wrong and needs to be corrected.
+			if (!e.ctrlKey && !e.altKey && !e.shiftKey
+				&& $('#loading_icon').css('opacity') <= 0)
+			{
+				// Don't navigate to the link.
+				e.preventDefault();
 
-			// The URL we are navigating to.
-			let address = $(this).attr('href');
+				// The URL we are navigating to.
+				let address = $(this).attr('href');
 
-			// Update the URL.
-			history.pushState({}, '', address);
+				// Update the URL.
+				history.pushState({}, '', address);
 
-			// Load the content.
-			load_content_ajax(address, 1);
+				// Load the content.
+				load_content_ajax(address, 1);
 
-			// Remove the "active" class from any currently active sidebar links.
-			$('#sidebar ul li.active').removeClass('active');
+				// Remove the "active" class from any currently active sidebar links.
+				$('#sidebar ul li.active').removeClass('active');
+			}
 		});
 
 		// If the history state changes (e.g. the "back" button is pressed), load the content via AJAX.
