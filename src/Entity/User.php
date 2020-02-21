@@ -70,6 +70,11 @@ class User implements UserInterface, \Serializable
 	private $comments;
 
 	/**
+	 * @ORM\Column(type="datetimetz")
+	 */
+	private $user_since;
+
+	/**
 	 * User constructor.
 	 */
 	public function __construct()
@@ -182,7 +187,11 @@ class User implements UserInterface, \Serializable
 	 */
 	public function unserialize($serialized)
 	{
-		list ($this->id, $this->username, $this->password) = unserialize($serialized, ['allowed_classes' => FALSE]);
+		[
+			$this->id,
+			$this->username,
+			$this->password,
+		] = unserialize($serialized, ['allowed_classes' => FALSE]);
 	}
 
 	/**
@@ -195,7 +204,8 @@ class User implements UserInterface, \Serializable
 
 	public function addPost(Post $post): self
 	{
-		if (!$this->posts->contains($post)) {
+		if (!$this->posts->contains($post))
+		{
 			$this->posts[] = $post;
 			$post->setUser($this);
 		}
@@ -205,10 +215,12 @@ class User implements UserInterface, \Serializable
 
 	public function removePost(Post $post): self
 	{
-		if ($this->posts->contains($post)) {
+		if ($this->posts->contains($post))
+		{
 			$this->posts->removeElement($post);
 			// set the owning side to null (unless already changed)
-			if ($post->getUser() === $this) {
+			if ($post->getUser() === $this)
+			{
 				$post->setUser(NULL);
 			}
 		}
@@ -226,7 +238,8 @@ class User implements UserInterface, \Serializable
 
 	public function addComment(Comment $comment): self
 	{
-		if (!$this->comments->contains($comment)) {
+		if (!$this->comments->contains($comment))
+		{
 			$this->comments[] = $comment;
 			$comment->setUser($this);
 		}
@@ -236,13 +249,27 @@ class User implements UserInterface, \Serializable
 
 	public function removeComment(Comment $comment): self
 	{
-		if ($this->comments->contains($comment)) {
+		if ($this->comments->contains($comment))
+		{
 			$this->comments->removeElement($comment);
 			// set the owning side to null (unless already changed)
-			if ($comment->getUser() === $this) {
+			if ($comment->getUser() === $this)
+			{
 				$comment->setUser(NULL);
 			}
 		}
+
+		return $this;
+	}
+
+	public function getUserSince(): ?\DateTimeInterface
+	{
+		return $this->user_since;
+	}
+
+	public function setUserSince(\DateTimeInterface $user_since): self
+	{
+		$this->user_since = $user_since;
 
 		return $this;
 	}

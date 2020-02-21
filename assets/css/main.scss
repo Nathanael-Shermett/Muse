@@ -669,11 +669,68 @@ section#main
 				background-color: #C99;
 			}
 		}
+
+		table
+		{
+			border-collapse: collapse;
+			margin:          40px 0;
+			table-layout:    fixed;
+			width:           100%;
+
+			tr
+			{
+				position: relative;
+
+				&:hover td
+				{
+					background-color: $light_beige;
+					border:           1px solid $medium_beige;
+				}
+			}
+
+			th
+			{
+				font-family: $font2;
+			}
+
+			td
+			{
+				background-clip: padding-box;
+				border:          1px solid $medium_beige;
+				font-size:       $font_size_small;
+				padding:         5px;
+
+				a.cover_row
+				{
+					background: none;
+					display:    block;
+					left:       0;
+					height:     100%;
+					outline:    none;
+					position:   absolute;
+					top:        0;
+					width:      100%;
+				}
+			}
+
+			td.truncate
+			{
+				white-space:   nowrap;
+				overflow:      hidden;
+				text-overflow: ellipsis;
+			}
+		}
 	}
 
 	main .wrapper
 	{
 		width: 960px;
+
+		& > hr
+		{
+			margin:       20px 0 !important;
+			border-width: 0 !important;
+		}
 	}
 
 	main .box
@@ -731,6 +788,7 @@ section#main
 				display:         block;
 				font-family:     $font2;
 				font-size:       $font_size_medium;
+				outline:         none;
 				text-decoration: none;
 				text-overflow:   ellipsis;
 				width:           100%;
@@ -754,7 +812,7 @@ section#main
 		}
 	}
 
-	main .article
+	main .article, main .profile
 	{
 		font-size: $font_size_medium;
 		margin:    0 auto;
@@ -770,6 +828,41 @@ section#main
 			font-family:   $font2;
 			font-size:     $font_size_largest + 10;
 			margin-top:    0;
+		}
+	}
+
+	main .profile
+	{
+		h1, h2
+		{
+			text-align: center;
+		}
+
+		div#member_since
+		{
+			color:      $medium_beige;
+			font-size:  $font_size_medium;
+			font-style: italic;
+			margin:     20px 0 80px;
+			text-align: center;
+
+			time
+			{
+				font-weight: bold;
+			}
+		}
+
+		div#avatar
+		{
+			text-align: center;
+
+			img
+			{
+				border:        5px solid $light_beige;
+				border-radius: 200px;
+				height:        200px;
+				width:         200px;
+			}
 		}
 	}
 
@@ -1008,14 +1101,15 @@ section#main
 		overflow:      hidden;
 		position:      relative;
 		padding:       15px;
-		width:         calc((100% / 2) - 20px);
+		width:         calc((100% / 2) - 20px / 2);
 
 		hr.category
 		{
 			border-width: 0;
 			border-top:   3px solid $medium_beige;
+			margin:       0;
 			position:     absolute;
-			top:          -7px;
+			top:          0;
 			width:        50%;
 		}
 
@@ -1148,6 +1242,7 @@ section#main
 			.author a
 			{
 				color:           inherit;
+				outline:         none;
 				pointer-events:  all;
 				text-decoration: none;
 			}

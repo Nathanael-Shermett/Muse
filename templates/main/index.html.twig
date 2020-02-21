@@ -6,86 +6,10 @@
 
 	<div id="masonry">
 		{% for post in posts %}
-			<div class="card">
-
-				{% if post.categories|length == 1 %}
-					{% for category in post.categories %}
-						<hr class="category category_{{ category.supercategory }}">
-						<hr class="category category_{{ category.supercategory }}">
-					{% endfor %}
-				{% elseif post.categories|length == 2 %}
-					{% for category in post.categories %}
-						<hr class="category category_{{ category.supercategory }}">
-					{% endfor %}
-				{% else %}
-					<hr class="category">
-					<hr class="category">
-				{% endif %}
-
-				<a href="{{ absolute_url('post/' ~ post.id) }}" class="overlay" data-request-ajax>&hellip;</a>
-
-				<header>
-
-					{% if post.categories|length == 1 %}
-
-						<span class="one icon">
-							{% for category in post.categories %}
-								<a href="{{ path('view_posts', {'supercategory': category.supercategory, 'category': category.name}) }}">
-									<img src="{{ asset('images/icons/' ~ category.icon) }}"
-										 title="{{ category.name|title }}">
-								</a>
-							{% endfor %}
-						</span>
-
-					{% elseif post.categories|length == 2 %}
-
-						<span class="two icon">
-							{% for category in post.categories %}
-								<a href="{{ path('view_posts', {'supercategory': category.supercategory, 'category': category.name}) }}">
-									<img src="{{ asset('images/icons/' ~ category.icon) }}"
-										 title="{{ category.name|title }}">
-								</a>
-							{% endfor %}
-						</span>
-
-					{% endif %}
-
-					<span class="title">
-						{{ post.title }}
-					</span>
-					<span class="author">
-						by <a href="{{ absolute_url('profile/view/' ~ post.user.username) }}"
-							  rel="author">{{ post.user.username }}</a>
-					</span>
-				</header>
-
-				<div class="content">
-					{{ post.content|markdown }}
-				</div>
-
-			</div>
+			{% include 'main/card.html.twig' %}
 		{% endfor %}
 	</div>
 
 {% endblock %}
 
-{% block js %}
-	<script>
-		$(document).ready(function ()
-		{
-			// Masonry.
-			$('#masonry').masonry(
-				{
-					columnWidth : '.card',
-					gutter : 25,
-					itemSelector : '.card',
-				},
-			);
-
-			setTimeout(function ()
-			{
-				$('#masonry').masonry().layout();
-			}, 200);
-		});
-	</script>
-{% endblock %}
+{% block js %}{% endblock %}

@@ -1,1 +1,60 @@
-{% extends 'masonry.html.twig' %}
+<div class="card">
+
+	{% if post.categories|length == 1 %}
+		{% for category in post.categories %}
+			<hr class="category category_{{ category.supercategory }}">
+			<hr class="category category_{{ category.supercategory }}">
+		{% endfor %}
+	{% elseif post.categories|length == 2 %}
+		{% for category in post.categories %}
+			<hr class="category category_{{ category.supercategory }}">
+		{% endfor %}
+	{% else %}
+		<hr class="category">
+		<hr class="category">
+	{% endif %}
+
+	<a href="{{ path('view_post', {'post_id': post.id}) }}" class="overlay" data-request-ajax>&hellip;</a>
+
+	<header>
+
+		{% if post.categories|length == 1 %}
+
+			<span class="one icon">
+				{% for category in post.categories %}
+					<a href="{{ path('view_posts', {'supercategory': category.supercategory, 'category': category.name}) }}"
+					   data-request-ajax>
+						<img src="{{ asset('images/icons/' ~ category.icon) }}"
+							 title="{{ category.name|title }}">
+					</a>
+				{% endfor %}
+			</span>
+
+		{% elseif post.categories|length == 2 %}
+
+			<span class="two icon">
+				{% for category in post.categories %}
+					<a href="{{ path('view_posts', {'supercategory': category.supercategory, 'category': category.name}) }}"
+					   data-request-ajax>
+						<img src="{{ asset('images/icons/' ~ category.icon) }}"
+							 title="{{ category.name|title }}">
+					</a>
+				{% endfor %}
+			</span>
+
+		{% endif %}
+
+		<span class="title">
+			{{ post.title }}
+		</span>
+		<span class="author">
+			by <a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author"
+				  data-request-ajax>{{ post.user.username }}</a>
+		</span>
+	</header>
+
+	<div class="content">
+		{{ post.content|markdown }}
+	</div>
+
+</div>

@@ -162,12 +162,35 @@
 
 				// Scroll to the top of the page.
 				$('html,body').scrollTop(0);
+
+				// Initialize masonry.
+				start_masonry();
 			});
 		});
 	}
 
+	// Initializes masonry, where applicable.
+	function start_masonry()
+	{
+		// Masonry, where applicable.
+		$('#masonry').masonry(
+			{
+				columnWidth : '.card',
+				gutter : 20,
+				itemSelector : '.card',
+			},
+		);
+
+		setTimeout(function()
+		{
+			$('#masonry').masonry().layout();
+		}, 200);
+	}
+
 	$(document).ready(function()
 	{
+		start_masonry();
+
 		// Load links with the [data-request-ajax] attribute via AJAX.
 		$(document).on('click', 'a[data-request-ajax]', function(e)
 		{
@@ -210,6 +233,7 @@
 		{
 			$(this).parent().addClass('active');
 		});
+
 	});
 </script>
 

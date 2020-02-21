@@ -40,7 +40,7 @@
 			<div class="comment box">
 				<time>{{ comment.timestamp|date("Y-m-d H:i:s")|ago }}</time>
 				<div class="sidebar">
-					<a href="" title="{{ comment.user.username }}">
+					<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author" data-request-ajax>
 						<img
 							src="https://www.gravatar.com/avatar/{{ comment.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=100"
 							alt="">

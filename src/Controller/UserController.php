@@ -3,7 +3,10 @@
 // src/Controller/UserController.php
 namespace App\Controller;
 
+use App\Entity\Comment;
+use App\Entity\Post;
 use App\Entity\User;
+use App\Form\CommentType;
 use App\Form\Model\EditProfileModel;
 use App\Form\EditProfileType;
 use App\Form\RegistrationFormType;
@@ -44,9 +47,7 @@ class UserController extends AbstractController
 
 			// Check for username / email duplicates.
 			$usernameUnique = TRUE;
-			$userByUsername = $this->getDoctrine()
-								   ->getRepository(User::class)
-								   ->findOneBy(['username' => $data->username]);
+			$userByUsername = $this->getDoctrine()->getRepository(User::class)->findOneBy(['username' => $data->username]);
 			$emailUnique = TRUE;
 			$userByEmail = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $data->email]);
 
@@ -165,5 +166,27 @@ class UserController extends AbstractController
 		}
 
 		return $this->render('user/register.html.twig', ['form' => $form->createView()]);
+	}
+
+	/**
+	 * @param Request $request
+	 * @Route("/profile/view/{user_id}", name="view_profile", requirements={"user_id"="\d+"})
+	 * @return
+	 */
+	public function view($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder)
+	{
+		// Get the user.
+		$user = $this->getDoctrine()->getRepository(User::class)->find($user_id);
+
+		// Throw an error if the user does not exist.
+		if (!$user)
+		{
+			throw $this->createNotFoundException("No user found for ID #$user_id.");
+		}
+
+		// Render everything.
+		return $this->render('user/view.html.twig', [
+			'user' => $user,
+		]);
 	}
 }
