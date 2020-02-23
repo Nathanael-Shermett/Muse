@@ -11,17 +11,22 @@
 	{# ### #}
 
 	<div class="box no-margin" id="post_content">
-		<div class="article">
+	<div class="article">
 
-			<h1>{{ post.title }}</h1>
+		<h1>{{ post.title }}</h1>
+		<span class="author">by
+			<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author" data-request-ajax>
+				{{ post.user.username }}
+			</a>
+		</span>
 
-			{{ post.content|markdown }}
-		</div>
+		{{ post.content|markdown }}
+
 	</div>
 
 	{# Shrink the post content area if the post is really short. #}
 	{% if post.content|length <= 10000 %}
-		</div>
+	</div>
 	{% endif %}
 	{# ### #}
 

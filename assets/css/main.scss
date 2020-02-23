@@ -831,6 +831,16 @@ section#main
 		}
 	}
 
+	main .article
+	{
+		.author
+		{
+			color:   $medium_beige;
+			display: block;
+			margin:  -50px 0 40px 0;
+		}
+	}
+
 	main .profile
 	{
 		h1, h2
