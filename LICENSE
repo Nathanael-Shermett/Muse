@@ -1,4 +1,26 @@
-BSD 3-Clause License
+------------------------
+  Symfony
+------------------------
+
+Symfony, the open-source framework upon which Muse is built, is released under
+the MIT license. The name "Symfony", and all related branding, is a trademark
+of Symfony SAS. For more information, please see the URL listed below:
+
+    Symfony Trademark and Licenses
+    https://symfony.com/license
+
+
+------------------------
+  Muse
+------------------------
+
+The Muse source code, except where otherwise indicated, is released under the
+BSD 3-Clause license. The full text of the BSD 3-Clause license is provided below.
+
+
+------------------------
+  BSD 3-Clause License
+------------------------
 
 Copyright (c) 2020, Nathanael Shermett
 All rights reserved.
