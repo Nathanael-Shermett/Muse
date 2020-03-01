@@ -19,42 +19,47 @@ class Comment
 
     /**
      * @ORM\Column(type="text")
-     */
-    private $content;
+	 */
+	private $content;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $post;
+	/**
+	 * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="comments")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private $post;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
+	/**
+	 * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private $user;
 
-    /**
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
-     */
-    private $timestamp;
+	/**
+	 * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+	 */
+	private $timestamp;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $deleted;
 
-    public function getContent(): ?string
+	public function getId(): ?int
 	{
-        return $this->content;
-    }
+		return $this->id;
+	}
 
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
+	public function getContent(): ?string
+	{
+		return $this->content;
+	}
 
-        return $this;
-    }
+	public function setContent(string $content): self
+	{
+		$this->content = $content;
+
+		return $this;
+	}
 
     public function getPost(): ?Post
     {
@@ -70,25 +75,43 @@ class Comment
 
     public function getUser(): ?User
     {
-        return $this->user;
-    }
+		return $this->user;
+	}
 
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
+	public function setUser(?User $user): self
+	{
+		$this->user = $user;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getTimestamp(): ?\DateTimeInterface
-    {
-        return $this->timestamp;
-    }
+	public function getTimestamp(): ?\DateTimeInterface
+	{
+		return $this->timestamp;
+	}
 
-    public function setTimestamp(\DateTimeInterface $timestamp): self
-    {
-        $this->timestamp = $timestamp;
+	public function setTimestamp(\DateTimeInterface $timestamp): self
+	{
+		$this->timestamp = $timestamp;
 
-        return $this;
-    }
+		return $this;
+	}
+
+	public function getDeleted(): ?bool
+	{
+		return $this->deleted;
+	}
+
+	// Alias of getDeleted()
+	public function deleted(): ?bool
+	{
+		return $this->getDeleted();
+	}
+
+	public function setDeleted(bool $deleted): self
+	{
+		$this->deleted = $deleted;
+
+		return $this;
+	}
 }
