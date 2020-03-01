@@ -14,11 +14,25 @@
 	<div class="article">
 
 		<h1>{{ post.title }}</h1>
-		<span class="author">by
-			<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author" data-request-ajax>
-				{{ post.user.username }}
-			</a>
-		</span>
+
+		<nav>
+			<ul>
+				<li>
+					<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author"
+					   data-request-ajax>Written by <span>{{ post.user.username }}</span></a>
+				</li>
+				<li>
+					<time>{{ post.timestamp|date("Y-m-d H:i:s")|ago }}</time>
+				</li>
+				<li>
+					<a href="{{ path('edit_post', {'post_id': post.id}) }}" class="edit" data-request-ajax>Edit</a>
+				</li>
+				<li>
+					<a href="{{ path('delete_post', {'post_id': post.id, 'csrf_token': csrf_token('delete-post-' ~ post.id)}) }}"
+					   class="delete">Delete</a>
+				</li>
+			</ul>
+		</nav>
 
 		{{ post.content|markdown }}
 
@@ -31,31 +45,55 @@
 	{# ### #}
 
 	<div class="wrapper">
+
 		{{ form_start(form) }}
+
 
 		<div class="write_comment">
 			{{ form_errors(form.content) }}
 			{{ form_widget(form.content, {attr: {class: 'short', placeholder: 'Write your comment here.'}}) }}
-
 			<button type="submit"><span>Submit </span>✔</button>
 		</div>
 		{{ form_end(form) }}
 
 		{% for comment in comments|reverse %}
-			<div class="comment box">
-				<time>{{ comment.timestamp|date("Y-m-d H:i:s")|ago }}</time>
-				<div class="sidebar">
-					<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author" data-request-ajax>
-						<img
-							src="https://www.gravatar.com/avatar/{{ comment.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=100"
-							alt="">
-						{{ comment.user.username }}
-					</a>
+			{% if not comment.deleted %}
+				<div class="comment box">
+
+					<nav>
+						<ul>
+							<li>
+								<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author"
+								   data-request-ajax>Written by <span>{{ post.user.username }}</span></a>
+							</li>
+							<li>
+								<time>{{ comment.timestamp|date("Y-m-d H:i:s")|ago }}</time>
+							</li>
+							<li>
+								<a href="{{ path('edit_comment', {'comment_id': comment.id}) }}" class="edit"
+								   data-request-ajax>Edit</a>
+							</li>
+							<li>
+								<a href="{{ path('delete_comment', {'comment_id': comment.id, 'csrf_token': csrf_token('delete-comment-' ~ comment.id)}) }}"
+								   class="delete">Delete</a>
+							</li>
+						</ul>
+					</nav>
+
+					<div class="sidebar">
+						<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author"
+						   data-request-ajax>
+							<img
+								src="https://www.gravatar.com/avatar/{{ comment.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=100"
+								alt="">
+							{{ comment.user.username }}
+						</a>
+					</div>
+					<div class="comment_area">
+						{{ comment.content|markdown }}
+					</div>
 				</div>
-				<div class="comment_area">
-					{{ comment.content|markdown }}
-				</div>
-			</div>
+			{% endif %}
 		{% endfor %}
 	</div>
 

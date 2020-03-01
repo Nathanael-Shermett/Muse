@@ -57,141 +57,164 @@ class Post
 	 */
 	private $categories;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $timestamp;
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $timestamp;
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $deleted;
 
 	public function __construct()
-         	{
-         		$this->comments = new ArrayCollection();
-         		$this->categories = new ArrayCollection();
-         	}
+	{
+		$this->comments = new ArrayCollection();
+		$this->categories = new ArrayCollection();
+	}
 
 	public function getId(): ?int
-         	{
-         		return $this->id;
-         	}
+	{
+		return $this->id;
+	}
 
 	public function getTitle(): ?string
-         	{
-         		return $this->title;
-         	}
+	{
+		return $this->title;
+	}
 
 	public function setTitle(string $title): self
-         	{
-         		$this->title = $title;
-         
-         		return $this;
-         	}
+	{
+		$this->title = $title;
+
+		return $this;
+	}
 
 	public function getContent(): ?string
-         	{
-         		return $this->content;
-         	}
+	{
+		return $this->content;
+	}
 
 	public function setContent(string $content): self
-         	{
-         		$this->content = $content;
-         
-         		return $this;
-         	}
+	{
+		$this->content = $content;
+
+		return $this;
+	}
 
 	public function getUser(): ?User
-         	{
-         		return $this->user;
-         	}
+	{
+		return $this->user;
+	}
 
 	public function setUser(?User $user): self
-         	{
-         		$this->user = $user;
-         
-         		return $this;
-         	}
+	{
+		$this->user = $user;
+
+		return $this;
+	}
 
 	/**
 	 * @return Collection|Comment[]
 	 */
 	public function getComments(): Collection
-         	{
-         		return $this->comments;
-         	}
+	{
+		return $this->comments;
+	}
 
 	public function addComment(Comment $comment): self
-         	{
-         		if (!$this->comments->contains($comment))
-         		{
-         			$this->comments[] = $comment;
-         			$comment->setPost($this);
-         		}
-         
-         		return $this;
-         	}
+	{
+		if (!$this->comments->contains($comment))
+		{
+			$this->comments[] = $comment;
+			$comment->setPost($this);
+		}
+
+		return $this;
+	}
 
 	public function removeComment(Comment $comment): self
-         	{
-         		if ($this->comments->contains($comment))
-         		{
-         			$this->comments->removeElement($comment);
-         			// set the owning side to null (unless already changed)
-         			if ($comment->getPost() === $this)
-         			{
-         				$comment->setPost(NULL);
-         			}
-         		}
-         
-         		return $this;
-         	}
+	{
+		if ($this->comments->contains($comment))
+		{
+			$this->comments->removeElement($comment);
+			// set the owning side to null (unless already changed)
+			if ($comment->getPost() === $this)
+			{
+				$comment->setPost(NULL);
+			}
+		}
+
+		return $this;
+	}
 
 	public function getAbstract(): ?string
-         	{
-         		return $this->abstract;
-         	}
+	{
+		return $this->abstract;
+	}
 
 	public function setAbstract(?string $abstract): self
-         	{
-         		$this->abstract = $abstract;
-         
-         		return $this;
-         	}
+	{
+		$this->abstract = $abstract;
+
+		return $this;
+	}
 
 	/**
 	 * @return Collection|PostCategory[]
 	 */
 	public function getCategories(): Collection
-         	{
-         		return $this->categories;
-         	}
+	{
+		return $this->categories;
+	}
 
-	public function addCategories(PostCategory $categories): self
-         	{
-         		if (!$this->categories->contains($categories))
-         		{
-         			$this->categories[] = $categories;
-         		}
-         
-         		return $this;
-         	}
+	public function addCategory(PostCategory $categories): self
+	{
+		if (!$this->categories->contains($categories))
+		{
+			$this->categories[] = $categories;
+		}
 
-	public function removeCategories(PostCategory $categories): self
-         	{
-         		if ($this->categories->contains($categories))
-         		{
-         			$this->categories->removeElement($categories);
-         		}
-         
-         		return $this;
-         	}
+		return $this;
+	}
 
-    public function getTimestamp(): ?\DateTimeInterface
-    {
-        return $this->timestamp;
-    }
+	public function removeCategory(PostCategory $categories): self
+	{
+		if ($this->categories->contains($categories))
+		{
+			$this->categories->removeElement($categories);
+		}
 
-    public function setTimestamp(\DateTimeInterface $timestamp): self
-    {
-        $this->timestamp = $timestamp;
+		return $this;
+	}
 
-        return $this;
-    }
+	public function getTimestamp(): ?\DateTimeInterface
+	{
+		return $this->timestamp;
+	}
+
+	public function setTimestamp(\DateTimeInterface $timestamp): self
+	{
+		$this->timestamp = $timestamp;
+
+		return $this;
+	}
+
+	public function getDeleted(): ?bool
+	{
+		return $this->deleted;
+	}
+
+	// Alias of getDeleted()
+	public function deleted(): ?bool
+	{
+		return $this->getDeleted();
+	}
+
+	public function setDeleted(bool $deleted): self
+	{
+		$this->deleted = $deleted;
+
+		return $this;
+	}
 }

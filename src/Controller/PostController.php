@@ -24,11 +24,8 @@ class PostController extends AbstractController
 		// Get the user.
 		$user = $this->getUser();
 
-		// Get the form categories (so we can pass them to the form).
-		$categories = $this->getDoctrine()->getRepository(PostCategory::class)->findAll();
-
 		// Build the form.
-		$form = $this->createForm(PostType::class, NULL, ['categories' => $categories]);
+		$form = $this->createForm(PostType::class, NULL);
 
 		// Handle the submission (will only happen on POST).
 		$form->handleRequest($request);
@@ -53,8 +50,9 @@ class PostController extends AbstractController
 			$post->setTitle($title);
 			$post->setContent($content);
 			$post->setAbstract($abstract);
-			$post->addCategories($categories[0]);
-			$post->addCategories($categories[1]);
+			$post->setDeleted(FALSE);
+			$post->addCategory($categories[0]);
+			$post->addCategory($categories[1]);
 
 			$entityManager->persist($post);
 			$entityManager->flush();
@@ -62,7 +60,92 @@ class PostController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
-		return $this->render('post/new.html.twig', ['form' => $form->createView()]);
+		return $this->render('post/edit.html.twig', [
+			'form' => $form->createView(),
+			'title' => 'New Post',
+		]);
+	}
+
+	/**
+	 * @param Request $request
+	 * @Route("/post/delete/{post_id}/{csrf_token}", name="delete_post", defaults={"csrf_token"=""}, requirements={"post_id"="\d+"})
+	 * @return
+	 */
+	public function delete($post_id, $csrf_token, Request $request)
+	{
+		if ($this->isCsrfTokenValid("delete-post-$post_id", $csrf_token))
+		{
+			$entityManager = $this->getDoctrine()->getManager();
+			$post = $entityManager->getRepository(Post::class)->find($post_id);
+			$post->setDeleted(TRUE);
+			$entityManager->flush();
+
+			$this->addFlash('success', "The post has been deleted.");
+
+			return $this->redirectToRoute('homepage');
+		}
+		else
+		{
+			$this->addFlash('error', "
+				An unauthorized attempt was made to delete this post, but we intercepted it.
+				You are most likely receiving this message because you clicked a link you shouldn't have.
+				If you believe you are receiving this message in error, please try again.");
+
+			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+		}
+	}
+
+	/**
+	 * @param Request $request
+	 * @Route("/post/edit/{post_id}", name="edit_post", requirements={"post_id"="\d+"})
+	 * @return
+	 */
+	public function edit($post_id, Request $request)
+	{
+		// Get the user.
+		$user = $this->getUser();
+
+		// Get the post to be edited.
+		$entityManager = $this->getDoctrine()->getManager();
+		$post = $entityManager->getRepository(Post::class)->find($post_id);
+
+		// Build the form.
+		$form = $this->createForm(PostType::class, $post);
+
+		// Handle the submission (will only happen on POST).
+		$form->handleRequest($request);
+
+		// If the form is submitted (and good to go)...
+		if ($form->isSubmitted() && $form->isValid())
+		{
+			$data = $form->getData();
+
+			// Data to save.
+			$title = $data->getTitle();
+			$content = $data->getContent();
+			$abstract = $data->getAbstract();
+			$categories = $data->getCategories();
+
+			// Save the post.
+			$post->setTitle($title);
+			$post->setContent($content);
+			$post->setAbstract($abstract);
+
+			foreach ($categories as $category)
+			{
+				$post->addCategory($category);
+			}
+
+			$entityManager->persist($post);
+			$entityManager->flush();
+
+			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+		}
+
+		return $this->render('post/edit.html.twig', [
+			'form' => $form->createView(),
+			'title' => 'Edit Post',
+		]);
 	}
 
 	/**
@@ -73,11 +156,18 @@ class PostController extends AbstractController
 	 */
 	public function view($post_id, Request $request)
 	{
-		// Get the user.
-		$user = $this->getUser();
-
 		// Get the post.
 		$post = $this->getDoctrine()->getRepository(Post::class)->find($post_id);
+
+		if ($post->deleted())
+		{
+			$this->addFlash('error', 'The post you are trying to view has been deleted and can no longer be viewed.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		// Get the user.
+		$user = $this->getUser();
 
 		// Throw an error if the post does not exist.
 		if (!$post)
@@ -91,6 +181,7 @@ class PostController extends AbstractController
 		$comment->setTimestamp(new \DateTime());
 		$comment->setPost($post);
 		$comment->setUser($user);
+		$comment->setDeleted(FALSE);
 
 		// Handle the submission (will only happen on POST)
 		$form->handleRequest($request);
@@ -110,8 +201,8 @@ class PostController extends AbstractController
 
 		// Render everything.
 		return $this->render('post/view.html.twig', [
-			'post'     => $post,
-			'form'     => $form->createView(),
+			'post' => $post,
+			'form' => $form->createView(),
 			'comments' => $comments,
 		]);
 	}

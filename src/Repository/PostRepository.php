@@ -23,13 +23,14 @@ class PostRepository extends ServiceEntityRepository
 	{
 		if ($supercategory == NULL && $category == NULL)
 		{
-			return $this->createQueryBuilder('p')->getQuery()->getResult();
+			return $this->createQueryBuilder('p')->where('p.deleted = 0')->getQuery()->getResult();
 		}
 		elseif ($supercategory == NULL)
 		{
 			return $this->createQueryBuilder('p')
 						->innerJoin('p.categories', 'c')
 						->andWhere('c.name = :category')
+						->andWhere('p.deleted = 0')
 						->setParameter('category', $category)
 						->getQuery()
 						->getResult();
@@ -39,6 +40,7 @@ class PostRepository extends ServiceEntityRepository
 			return $this->createQueryBuilder('p')
 						->innerJoin('p.categories', 'c')
 						->andWhere('c.supercategory = :supercategory')
+						->andWhere('p.deleted = 0')
 						->setParameter('supercategory', $supercategory)
 						->getQuery()
 						->getResult();
@@ -48,6 +50,7 @@ class PostRepository extends ServiceEntityRepository
 			return $this->createQueryBuilder('p')
 						->innerJoin('p.categories', 'c')
 						->andWhere('c.supercategory = :supercategory')
+						->andWhere('p.deleted = 0')
 						->setParameter('supercategory', $supercategory)
 						->andWhere('c.name = :category')
 						->setParameter('category', $category)
