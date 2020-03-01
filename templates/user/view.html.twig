@@ -34,17 +34,20 @@
 						</tr>
 
 						{% for comment in user.comments|reverse %}
-							<tr>
-								<td>
-									<a class="cover_row" href="{{ path('view_post', {'post_id' : comment.post.id}) }}"
-									   data-request-ajax></a>
-									{{ comment.post.title }}
-								</td>
-								<td>
-									<time>{{ comment.timestamp|date('F j, Y') }}</time>
-								</td>
-								<td class="truncate">{{ comment.content|markdown|striptags|raw }}</td>
-							</tr>
+							{% if not comment.post.deleted and not comment.deleted %}
+								<tr>
+									<td>
+										<a class="cover_row"
+										   href="{{ path('view_post', {'post_id' : comment.post.id}) }}"
+										   data-request-ajax></a>
+										{{ comment.post.title }}
+									</td>
+									<td>
+										<time>{{ comment.timestamp|date('F j, Y') }}</time>
+									</td>
+									<td class="truncate">{{ comment.content|markdown|striptags|raw }}</td>
+								</tr>
+							{% endif %}
 						{% endfor %}
 
 					</table>
@@ -60,7 +63,9 @@
 			<hr>
 			<div id="masonry">
 				{% for post in user.posts|reverse %}
-					{% include 'main/card.html.twig' %}
+					{% if not post.deleted %}
+						{% include 'main/card.html.twig' %}
+					{% endif %}
 				{% endfor %}
 			</div>
 		</div>

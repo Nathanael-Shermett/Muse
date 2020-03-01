@@ -163,6 +163,47 @@ class User implements UserInterface, \Serializable
 	}
 
 	/**
+	 * Returns TRUE if the user has a role, otherwise FALSE. Utilizes hierarchical role structure, such that:
+	 * - `ROLE_ADMIN` = [`ROLE_ADMIN`, `ROLE_MODERATOR`, `ROLE_USER`]
+	 * - `ROLE_MODERATOR` = [`ROLE_MODERATOR`, `ROLE_USER`]
+	 * - `ROLE_USER` = [`ROLE_USER`]
+	 * - `ROLE_BANNED` = [`ROLE_BANNED`]
+	 *
+	 * @return boolean
+	 */
+	public function hasRole($role)
+	{
+		// If the user is an admin, they're also moderators and users.
+		if (in_array('ROLE_ADMIN', $this->roles))
+		{
+			return ($role == 'ROLE_ADMIN' || $role == 'ROLE_MODERATOR' || $role == 'ROLE_USER') ? TRUE : FALSE;
+		}
+
+		// If the user is a moderator, then're also a user.
+		if (in_array('ROLE_MODERATOR', $this->roles))
+		{
+			return ($role == 'ROLE_MODERATOR' || $role == 'ROLE_USER') ? TRUE : FALSE;
+		}
+
+		// If the user is a user, then... you get the picture.
+		if (in_array('ROLE_USER', $this->roles))
+		{
+			return ($role == 'ROLE_USER') ? TRUE : FALSE;
+		}
+
+		// If the user is a user, then... you get the picture.
+		if (in_array('ROLE_BANNED', $this->roles))
+		{
+			return ($role == 'ROLE_BANNED') ? TRUE : FALSE;
+		}
+	}
+
+	public function setRole($role)
+	{
+		$this->roles = (is_array($role)) ? $role : [$role];
+	}
+
+	/**
 	 *
 	 */
 	public function eraseCredentials()

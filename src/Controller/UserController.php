@@ -7,7 +7,6 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\CommentType;
-use App\Form\Model\EditProfileModel;
 use App\Form\EditProfileType;
 use App\Form\RegistrationFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,16 +21,26 @@ class UserController extends AbstractController
 	/**
 	 * @param Request                      $request
 	 * @param UserPasswordEncoderInterface $passwordEncoder
-	 * @Route("/profile/edit", name="edit_profile")
+	 * @Route("/profile/edit/{user_id}", name="edit_profile", defaults={"user_id" = NULL}, requirements={"user_id"="\d+"})
 	 * @return
 	 */
-	public function editProfile(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder)
 	{
-		// Get the current user.
-		$user = $this->getUser();
+		$currentUser = $this->getUser();
+		$user = $currentUser;
+
+		// The user we're editing is not you.
+		if ($user_id)
+		{
+			$entityManager = $this->getDoctrine()->getManager();
+			$user = $entityManager->getRepository(User::class)->find($user_id);
+		}
 
 		// Build the form.
-		$form = $this->createForm(EditProfileType::class, NULL, ['user' => $user]);
+		$form = $this->createForm(EditProfileType::class, NULL, [
+			'currentUser' => $currentUser,
+			'user' => $user,
+		]);
 
 		// Handle the form submission.
 		$form->handleRequest($request);
@@ -44,12 +53,15 @@ class UserController extends AbstractController
 			$usernameUpdated = FALSE;
 			$emailUpdated = FALSE;
 			$passwordUpdated = FALSE;
+			$roleUpdated = FALSE;
 
 			// Check for username / email duplicates.
 			$usernameUnique = TRUE;
-			$userByUsername = $this->getDoctrine()->getRepository(User::class)->findOneBy(['username' => $data->username]);
+			$userByUsername = $this->getDoctrine()
+								   ->getRepository(User::class)
+								   ->findOneBy(['username' => $data['username']]);
 			$emailUnique = TRUE;
-			$userByEmail = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $data->email]);
+			$userByEmail = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $data['email']]);
 
 			// If the username already exists in the database and does not belong to the current user.
 			if ($userByUsername instanceof User && $userByUsername != $user)
@@ -66,23 +78,23 @@ class UserController extends AbstractController
 			}
 
 			// Update the username (if provided, and not a duplicate, and not the same as the current username).
-			if ($usernameUnique && !empty($data->username) && $userByUsername != $user)
+			if ($usernameUnique && !empty($data['username']) && $userByUsername != $user)
 			{
-				$user->setUsername($data->username);
+				$user->setUsername($data['username']);
 				$this->addFlash('success', 'Your username has been updated.');
 				$usernameUpdated = TRUE;
 			}
 
 			// Update the email (if provided, and not a duplicate, and not the same as the current one).
-			if ($emailUnique && !empty($data->email) && $userByEmail != $user)
+			if ($emailUnique && !empty($data['email']) && $userByEmail != $user)
 			{
-				$user->setEmail($data->email);
+				$user->setEmail($data['email']);
 				$this->addFlash('success', 'Your email has been updated.');
 				$emailUpdated = TRUE;
 			}
 
 			// Update the user's password (if provided).
-			$plainPassword = $form->get('plainPassword')->getData();
+			$plainPassword = $data['plainPassword'];
 			if (!empty($plainPassword))
 			{
 				$passwordEncoded = $passwordEncoder->encodePassword($user, $plainPassword);
@@ -91,20 +103,44 @@ class UserController extends AbstractController
 				$passwordUpdated = TRUE;
 			}
 
-			// There were no errors, but no changes have been made either.
-			if ($usernameUnique && $emailUnique && !$usernameUpdated && !$emailUpdated && !$passwordUpdated)
+			// Update the user's role (if provided).
+			$role = $data['role'] ?? NULL;
+			if (!empty($role))
 			{
-				$this->addFlash('alert', 'You did not provide any new data. Accordingly, no changes have been made to your account.');
+				if (!$currentUser->hasRole('ROLE_ADMIN'))
+				{
+					$this->addFlash('error', "You are not authorized to modify administrator nor moderator access levels.");
+				}
+				else
+				{
+					$user->setRole($role);
+					$this->addFlash('success', "{$user->getUsername()}'s access level has been updated.");
+					$roleUpdated = TRUE;
+				}
+			}
+
+			// There were no errors, but no changes have been made either.
+			if ($usernameUnique &&
+				$emailUnique &&
+				!$usernameUpdated &&
+				!$emailUpdated &&
+				!$passwordUpdated &&
+				!$roleUpdated)
+			{
+				$this->addFlash('alert', 'You did not provide any new data. Therefore, no changes have been made.');
 			}
 
 			// Update the database.
 			$entityManager = $this->getDoctrine()->getManager();
 			$entityManager->flush();
 
-			return $this->redirectToRoute('edit_profile');
+			return $this->redirectToRoute('edit_profile', ['user_id' => $user->getId()]);
 		}
 
-		return $this->render('user/edit_profile.html.twig', ['form' => $form->createView()]);
+		return $this->render('user/edit_profile.html.twig', [
+			'form' => $form->createView(),
+			'user' => $user,
+		]);
 	}
 
 	/**
