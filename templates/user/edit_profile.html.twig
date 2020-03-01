@@ -4,53 +4,71 @@
 
 {% block body %}
 
-    <div class="wrapper">
-        {{ form_start(form) }}
+	<div class="wrapper">
+		{{ form_start(form) }}
 
-        {{ form_errors(form.currentPassword) }}
-        {{ form_widget(form.currentPassword, {attr: {placeholder: form.currentPassword.vars.label}}) }}
+		{{ form_errors(form.currentPassword) }}
+		{{ form_widget(form.currentPassword, {attr: {placeholder: form.currentPassword.vars.label}}) }}
 
-        <hr>
+		<hr>
 
-        {{ form_errors(form.username) }}
-        {{ form_widget(form.username, {attr: {placeholder: form.username.vars.name|humanize}}) }}
+		{{ form_errors(form.username) }}
+		{{ form_widget(form.username, {attr: {placeholder: form.username.vars.name|humanize}}) }}
 
-        {{ form_errors(form.email) }}
-        {{ form_widget(form.email, {attr: {placeholder: form.email.vars.name|humanize}}) }}
+		{{ form_errors(form.email) }}
+		{{ form_widget(form.email, {attr: {placeholder: form.email.vars.name|humanize}}) }}
 
-        {{ form_errors(form.plainPassword.first) }}
-        {{ form_widget(form.plainPassword.first, {attr: {placeholder: form.plainPassword.first.vars.label}}) }}
+		{{ form_errors(form.plainPassword.first) }}
+		{{ form_widget(form.plainPassword.first, {attr: {placeholder: form.plainPassword.first.vars.label}}) }}
 
-        {{ form_errors(form.plainPassword.second) }}
-        {{ form_widget(form.plainPassword.second, {attr: {placeholder: form.plainPassword.second.vars.label}}) }}
+		{{ form_errors(form.plainPassword.second) }}
+		{{ form_widget(form.plainPassword.second, {attr: {placeholder: form.plainPassword.second.vars.label}}) }}
 
-        <button type="submit">Update Account</button>
+		{% if app.user.id != user.id
+			and (app.user.hasRole('ROLE_ADMIN')
+			or  (app.user.hasRole('ROLE_MODERATOR') and not user.hasRole('ROLE_MODERATOR'))) %}
+			{{ form_errors(form.role) }}
+			{{ form_widget(form.role) }}
+		{% else %}
+			{# Prevent the form field from rendering. #}
+			{% do form.role.setRendered() %}
+		{% endif %}
 
-        <hr>
+		<button type="submit">Update Account</button>
 
-        <div id="edit_avatar">
-            <div>
-                <p>To display your profile picture, Muse uses the public Gravatar associated with your email address.
-                    Your email address is:</p>
+		{% if app.user.id == user.id %}
+			<hr>
 
-                <p class="email">{{ app.user.email }}</p>
+			<div id="edit_avatar">
+				<div>
+					<p>To display your profile picture, Muse uses the public Gravatar associated with your email
+						address.
+						Your email address is:</p>
 
-                <p>If you want to change it, simply click on your current profile picture (to the right) and set up your
-                    Gravatar account.</p>
+					<p class="email">{{ app.user.email }}</p>
 
-            </div>
-            <a href="https://gravatar.com" title="Gravatar for {{ app.user.email }}" target="Gravatar">
-                <img src="https://www.gravatar.com/avatar/{{ app.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=256" alt="">
-            </a>
-        </div>
+					<p>If you want to change it, simply click on your current profile picture (to the right) and set up
+						your
+						Gravatar account.</p>
 
-        {{ form_end(form) }}
+				</div>
+				<a href="https://gravatar.com" title="Gravatar for {{ app.user.email }}" target="Gravatar">
+					<img src="https://www.gravatar.com/avatar/{{ app.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=256"
+						 alt="">
+				</a>
+			</div>
+		{% endif %}
 
-        <hr>
+		{{ form_end(form) }}
 
-        <form action="{{ path('logout') }}">
-            <button type="submit">Logout</button>
-        </form>
-    </div>
+		{% if app.user.id == user.id %}
+			<hr>
+
+			<form action="{{ path('logout') }}">
+				<button type="submit">Logout</button>
+			</form>
+
+		{% endif %}
+	</div>
 
 {% endblock %}
