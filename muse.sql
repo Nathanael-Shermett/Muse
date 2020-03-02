@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.7
+-- version 5.0.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 23, 2020 at 12:57 AM
--- Server version: 10.1.30-MariaDB
--- PHP Version: 7.2.2
+-- Generation Time: Mar 02, 2020 at 03:36 AM
+-- Server version: 10.4.11-MariaDB
+-- PHP Version: 7.4.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -13,9 +13,9 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
 --
@@ -29,11 +29,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `comment` (
-  `id` int(11) NOT NULL,
-  `post_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+	`id`        int(11)                             NOT NULL,
+	`post_id`   int(11)                             NOT NULL,
+	`user_id`   int(11)                             NOT NULL,
+	`content`   longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+	`timestamp` datetime                            NOT NULL DEFAULT current_timestamp(),
+	`deleted`   tinyint(1)                                   DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -43,7 +44,8 @@ CREATE TABLE `comment` (
 --
 
 CREATE TABLE `migration_versions` (
-  `version` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+	`version`     varchar(14) COLLATE utf8_unicode_ci NOT NULL,
+	`executed_at` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -53,12 +55,13 @@ CREATE TABLE `migration_versions` (
 --
 
 CREATE TABLE `post` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `title` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abstract` longtext COLLATE utf8mb4_unicode_ci,
-  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+	`id`        int(11)                                NOT NULL,
+	`user_id`   int(11)                                NOT NULL,
+	`title`     varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+	`content`   longtext COLLATE utf8mb4_unicode_ci    NOT NULL,
+	`abstract`  longtext COLLATE utf8mb4_unicode_ci             DEFAULT NULL,
+	`timestamp` datetime                               NOT NULL,
+	`deleted`   tinyint(1)                             NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -163,12 +166,13 @@ CREATE TABLE `post|post_category` (
 --
 
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
-  `username` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_active` tinyint(1) NOT NULL,
-  `roles` longtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '(DC2Type:array)'
+	`id`         int(11)                                 NOT NULL,
+	`user_since` datetime                                NOT NULL,
+	`username`   varchar(25) COLLATE utf8mb4_unicode_ci  NOT NULL,
+	`password`   varchar(64) COLLATE utf8mb4_unicode_ci  NOT NULL,
+	`email`      varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+	`is_active`  tinyint(1)                              NOT NULL,
+	`roles`      longtext COLLATE utf8mb4_unicode_ci     NOT NULL COMMENT '(DC2Type:array)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -216,7 +220,7 @@ ALTER TABLE `post|post_category`
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `UNIQ_8D93D649E7927C74` (`email`),
-  ADD UNIQUE KEY `UNIQ_8D93D649F85E0677` (`username`);
+	ADD UNIQUE KEY `UNIQ_8D93D649F85E0677`(`username`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -226,25 +230,26 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `comment`
 --
 ALTER TABLE `comment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `post`
 --
 ALTER TABLE `post`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `post_category`
 --
 ALTER TABLE `post_category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+	AUTO_INCREMENT = 66;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -254,7 +259,7 @@ ALTER TABLE `user`
 -- Constraints for table `comment`
 --
 ALTER TABLE `comment`
-  ADD CONSTRAINT `FK_9474526C4B89032C` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
+	ADD CONSTRAINT `FK_9474526C4B89032C` FOREIGN KEY (`post_id`) REFERENCES `post`(`id`),
   ADD CONSTRAINT `FK_9474526CA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
