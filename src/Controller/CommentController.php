@@ -29,17 +29,75 @@ class CommentController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
+		// The logged-in user.
+		$user = $this->getUser();
+
 		$entityManager = $this->getDoctrine()->getManager();
 		$comment = $entityManager->getRepository(Comment::class)->find($comment_id);
 
+		// Throw an error if the comment does not exist.
+		if (!$comment)
+		{
+			$this->addFlash('error', 'The comment you are attempting to delete does not exist.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		// Get the post the comment belongs to.
+		$post = $comment->getPost();
+
+		// Throw an error if the post does not exist.
+		if (!$post)
+		{
+			$this->addFlash('error', 'The comment you are attempting to delete does not seem to correspond with an actual post. Therefore, it cannot be deleted.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		if ($comment->deleted())
+		{
+			$this->addFlash('error', 'The comment you are trying to delete has actually already been deleted. No further action is necessary on your part.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		if ($post->deleted())
+		{
+			$this->addFlash('error', 'The comment you are trying to delete belongs to a post that has been deleted, and as such the comment cannot be removed.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		if ($this->isCsrfTokenValid("delete-comment-$comment_id", $csrf_token))
 		{
-			$comment->setDeleted(TRUE);
-			$entityManager->flush();
+			// If the comment belongs to an administrator and a moderator is trying to delete it.
+			if ($comment->getUser()->hasRole('ROLE_ADMIN')
+				&& !$user->hasRole('ROLE_ADMIN')
+				&& $user->hasRole('ROLE_MODERATOR'))
+			{
+				$this->addFlash('error', "Only administrators are allowed to delete other administrators' comments.");
 
-			$this->addFlash('success', "The comment has been deleted.");
+				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			}
 
-			return $this->redirectToRoute('view_post', ['post_id' => $comment->getPost()->getId()]);
+			// If the person trying to delete this comment is the comment's author, or a moderator.
+			elseif ($user->getId() == $comment->getUser()->getId() || $user->hasRole('ROLE_MODERATOR'))
+			{
+				$comment->setDeleted(TRUE);
+				$entityManager->flush();
+
+				$this->addFlash('success', "The comment has been deleted.");
+
+				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			}
+
+			// Invalid deletion attempt.
+			else
+			{
+				$this->addFlash('error', 'You are not authorized to delete this comment.');
+
+				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			}
 		}
 		else
 		{
@@ -48,7 +106,7 @@ class CommentController extends AbstractController
 				You are most likely receiving this message because you clicked a link you shouldn't have.
 				If you believe you are receiving this message in error, please try again.");
 
-			return $this->redirectToRoute('view_post', ['post_id' => $comment->getPost()->getId()]);
+			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 		}
 	}
 
@@ -67,18 +125,19 @@ class CommentController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
-		$entityManager = $this->getDoctrine()->getManager();
-
-		// Get the user.
+		// Get the logged-in user.
 		$user = $this->getUser();
 
-		// Get the comment.
+		// Get the comment to be edited.
+		$entityManager = $this->getDoctrine()->getManager();
 		$comment = $entityManager->getRepository(Comment::class)->find($comment_id);
 
 		// Throw an error if the comment does not exist.
 		if (!$comment)
 		{
-			throw $this->createNotFoundException("No comment found for ID #$comment_id.");
+			$this->addFlash('error', 'The comment you are attempting to edit does not exist.');
+
+			return $this->redirectToRoute('homepage');
 		}
 
 		// Get the post the comment belongs to.
@@ -87,7 +146,9 @@ class CommentController extends AbstractController
 		// Throw an error if the post does not exist.
 		if (!$post)
 		{
-			throw $this->createNotFoundException("No post found for comment ID #$comment_id.");
+			$this->addFlash('error', 'The comment you are attempting to edit does not seem to correspond with an actual post. Therefore, it cannot be edited.');
+
+			return $this->redirectToRoute('homepage');
 		}
 
 		if ($comment->deleted())
@@ -104,36 +165,58 @@ class CommentController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
-		// Build the comment form.
-		$form = $this->createForm(CommentType::class, $comment);
-
-		// Handle the submission (will only happen on POST)
-		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid())
+		// If the comment belongs to an administrator and a moderator is trying to delete it.
+		if ($comment->getUser()->hasRole('ROLE_ADMIN')
+			&& !$user->hasRole('ROLE_ADMIN')
+			&& $user->hasRole('ROLE_MODERATOR'))
 		{
-			$data = $form->getData();
+			$this->addFlash('error', "Only administrators are allowed to edit other administrators' comments.");
 
-			// Data to save.
-			$content = $data->getContent();
-
-			// Save the post.
-			$comment->setContent($content);
-
-			$entityManager->persist($comment);
-			$entityManager->flush();
-
-			// Redirect to this page (effectively resetting form values).
 			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 		}
 
-		// Get the comments.
-		$comments = $post->getComments();
+		// If the person trying to edit this comment is the comment's author, or a moderator.
+		elseif ($user->getId() == $comment->getUser()->getId() || $user->hasRole('ROLE_MODERATOR'))
+		{
+			// Build the comment form.
+			$form = $this->createForm(CommentType::class, $comment);
 
-		// Render everything.
-		return $this->render('comment/edit.html.twig', [
-			'post' => $post,
-			'form' => $form->createView(),
-			'comments' => $comments,
-		]);
+			// Handle the submission (will only happen on POST)
+			$form->handleRequest($request);
+			if ($form->isSubmitted() && $form->isValid())
+			{
+				$data = $form->getData();
+
+				// Data to save.
+				$content = $data->getContent();
+
+				// Save the post.
+				$comment->setContent($content);
+
+				$entityManager->persist($comment);
+				$entityManager->flush();
+
+				// Redirect to this page (effectively resetting form values).
+				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			}
+
+			// Get the comments.
+			$comments = $post->getComments();
+
+			// Render everything.
+			return $this->render('comment/edit.html.twig', [
+				'post' => $post,
+				'form' => $form->createView(),
+				'comments' => $comments,
+			]);
+		}
+
+		// Invalid edit attempt.
+		else
+		{
+			$this->addFlash('error', 'You are not authorized to edit this comment.');
+
+			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+		}
 	}
 }

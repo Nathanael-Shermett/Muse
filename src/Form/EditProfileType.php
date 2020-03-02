@@ -83,14 +83,12 @@ class EditProfileType extends AbstractType
 			];
 
 			$builder->add('role', ChoiceType::class, [
-				// The user should only have one role, so...
+
 				'data' => $data['role'] ?? $user->getRoles()[0],
-
 				'choices' => $roles,
-
 				'choice_attr' => function($choice, $key, $value) use ($currentUser)
 				{
-					if (!in_array('ROLE_ADMIN', $currentUser->getRoles()))
+					if (!$currentUser->hasRole('ROLE_ADMIN'))
 					{
 						if ($choice == 'ROLE_MODERATOR' || $choice == 'ROLE_ADMIN')
 						{

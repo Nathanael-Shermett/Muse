@@ -91,16 +91,41 @@ class PostController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
+		// The logged-in user.
+		$user = $this->getUser();
+
+		$entityManager = $this->getDoctrine()->getManager();
+		$post = $entityManager->getRepository(Post::class)->find($post_id);
+
 		if ($this->isCsrfTokenValid("delete-post-$post_id", $csrf_token))
 		{
-			$entityManager = $this->getDoctrine()->getManager();
-			$post = $entityManager->getRepository(Post::class)->find($post_id);
-			$post->setDeleted(TRUE);
-			$entityManager->flush();
+			// If the post belongs to an administrator and a moderator is trying to delete it.
+			if ($post->getUser()->hasRole('ROLE_ADMIN')
+				&& !$user->hasRole('ROLE_ADMIN')
+				&& $user->hasRole('ROLE_MODERATOR'))
+			{
+				$this->addFlash('error', "Only administrators are allowed to delete other administrators' posts.");
 
-			$this->addFlash('success', "The post has been deleted.");
+				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+			}
 
-			return $this->redirectToRoute('homepage');
+			// If the person trying to delete this post is the post's author, or a moderator.
+			elseif ($user->getId() == $post->getUser()->getId() || $user->hasRole('ROLE_MODERATOR'))
+			{
+				$post->setDeleted(TRUE);
+				$entityManager->flush();
+				$this->addFlash('success', 'The post has been deleted.');
+
+				return $this->redirectToRoute('homepage');
+			}
+
+			// Invalid deletion attempt.
+			else
+			{
+				$this->addFlash('error', 'You are not authorized to delete this post.');
+
+				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+			}
 		}
 		else
 		{
@@ -128,50 +153,72 @@ class PostController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
-		// Get the user.
+		// The logged-in user.
 		$user = $this->getUser();
 
 		// Get the post to be edited.
 		$entityManager = $this->getDoctrine()->getManager();
 		$post = $entityManager->getRepository(Post::class)->find($post_id);
 
-		// Build the form.
-		$form = $this->createForm(PostType::class, $post);
-
-		// Handle the submission (will only happen on POST).
-		$form->handleRequest($request);
-
-		// If the form is submitted (and good to go)...
-		if ($form->isSubmitted() && $form->isValid())
+		// If the post belongs to an administrator and a moderator is trying to delete it.
+		if ($post->getUser()->hasRole('ROLE_ADMIN')
+			&& !$user->hasRole('ROLE_ADMIN')
+			&& $user->hasRole('ROLE_MODERATOR'))
 		{
-			$data = $form->getData();
-
-			// Data to save.
-			$title = $data->getTitle();
-			$content = $data->getContent();
-			$abstract = $data->getAbstract();
-			$categories = $data->getCategories();
-
-			// Save the post.
-			$post->setTitle($title);
-			$post->setContent($content);
-			$post->setAbstract($abstract);
-
-			foreach ($categories as $category)
-			{
-				$post->addCategory($category);
-			}
-
-			$entityManager->persist($post);
-			$entityManager->flush();
+			$this->addFlash('error', "Only administrators are allowed to edit other administrators' posts.");
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 		}
 
-		return $this->render('post/edit.html.twig', [
-			'form' => $form->createView(),
-			'title' => 'Edit Post',
-		]);
+		// If the person trying to delete this post is the post's author, or a moderator.
+		elseif ($user->getId() == $post->getUser()->getId() || $user->hasRole('ROLE_MODERATOR'))
+		{
+			// Build the form.
+			$form = $this->createForm(PostType::class, $post);
+
+			// Handle the submission (will only happen on POST).
+			$form->handleRequest($request);
+
+			// If the form is submitted (and good to go)...
+			if ($form->isSubmitted() && $form->isValid())
+			{
+				$data = $form->getData();
+
+				// Data to save.
+				$title = $data->getTitle();
+				$content = $data->getContent();
+				$abstract = $data->getAbstract();
+				$categories = $data->getCategories();
+
+				// Save the post.
+				$post->setTitle($title);
+				$post->setContent($content);
+				$post->setAbstract($abstract);
+
+				foreach ($categories as $category)
+				{
+					$post->addCategory($category);
+				}
+
+				$entityManager->persist($post);
+				$entityManager->flush();
+
+				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+			}
+
+			return $this->render('post/edit.html.twig', [
+				'form' => $form->createView(),
+				'title' => 'Edit Post',
+			]);
+		}
+
+		// Invalid edit attempt.
+		else
+		{
+			$this->addFlash('error', 'You are not authorized to edit this post.');
+
+			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+		}
 	}
 
 	/**

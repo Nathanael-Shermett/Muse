@@ -30,8 +30,14 @@
 			{{ form_errors(form.role) }}
 			{{ form_widget(form.role) }}
 		{% else %}
-			{# Prevent the form field from rendering. #}
-			{% do form.role.setRendered() %}
+
+			{# Ensure the user is a moderator. If they are not, then the role field does not even exist. #}
+			{% if app.user.hasRole('ROLE_MODERATOR') %}
+
+				{# Prevent the form field from rendering. #}
+				{% do form.role.setRendered() %}
+
+			{% endif %}
 		{% endif %}
 
 		<button type="submit">Update Account</button>

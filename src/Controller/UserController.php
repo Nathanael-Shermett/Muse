@@ -26,17 +26,38 @@ class UserController extends AbstractController
 	 */
 	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder)
 	{
-		// Ensure the user logged in.
-		$this->denyAccessUnlessGranted('ROLE_USER', NULL, 'You must be logged in to access this page.');
+		// If the user is not logged in, redirect them.
+		if (!$this->getUser())
+		{
+			$this->addFlash('alert', 'You must be logged in to access the "edit profile" page.');
+
+			return $this->redirectToRoute('homepage');
+		}
 
 		$currentUser = $this->getUser();
 		$user = $currentUser;
 
 		// The user we're editing is not you.
-		if ($user_id)
+		if ($user_id && $user_id != $currentUser->getId())
 		{
 			$entityManager = $this->getDoctrine()->getManager();
 			$user = $entityManager->getRepository(User::class)->find($user_id);
+
+			// If the current user is not a moderator, redirect them.
+			if (!$currentUser->hasRole('ROLE_MODERATOR'))
+			{
+				$this->addFlash('error', 'Only site administrators and moderators can edit other users.');
+
+				return $this->redirectToRoute('edit_profile');
+			}
+
+			// If the user who is being edited is a moderator and the current user is not an administrator...
+			elseif ($user->hasRole('ROLE_MODERATOR') && !$currentUser->hasRole('ROLE_ADMIN'))
+			{
+				$this->addFlash('error', 'Only site administrators can edit other administrators and moderators.');
+
+				return $this->redirectToRoute('edit_profile');
+			}
 		}
 
 		// Build the form.
@@ -110,9 +131,16 @@ class UserController extends AbstractController
 			$role = $data['role'] ?? NULL;
 			if (!empty($role))
 			{
-				if (!$currentUser->hasRole('ROLE_ADMIN'))
+				if (!$currentUser->hasRole('ROLE_ADMIN') && ($role == 'ROLE_ADMIN' || $role == 'ROLE_MODERATOR'))
 				{
-					$this->addFlash('error', "You are not authorized to modify administrator nor moderator access levels.");
+					if ($role == 'ROLE_ADMIN')
+					{
+						$this->addFlash('error', "You are not authorized to add new administrators.");
+					}
+					else
+					{
+						$this->addFlash('error', "You are not authorized to add new moderators.");
+					}
 				}
 				else
 				{
@@ -237,12 +265,12 @@ class UserController extends AbstractController
 		// Throw an error if the user does not exist.
 		if (!$user)
 		{
-			throw $this->createNotFoundException("No user found for ID #$user_id.");
+			$this->addFlash('error', 'This user does not exist.');
+
+			return $this->redirectToRoute('homepage');
 		}
 
 		// Render everything.
-		return $this->render('user/view.html.twig', [
-			'user' => $user,
-		]);
+		return $this->render('user/view.html.twig', ['user' => $user]);
 	}
 }
