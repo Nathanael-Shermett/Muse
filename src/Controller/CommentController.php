@@ -21,6 +21,14 @@ class CommentController extends AbstractController
 	 */
 	public function delete($comment_id, $csrf_token, Request $request)
 	{
+		// If the user is not logged in, redirect them.
+		if (!$this->getUser())
+		{
+			$this->addFlash('error', 'You must be logged in to delete a comment.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		$entityManager = $this->getDoctrine()->getManager();
 		$comment = $entityManager->getRepository(Comment::class)->find($comment_id);
 
@@ -51,6 +59,14 @@ class CommentController extends AbstractController
 	 */
 	public function edit($comment_id, Request $request)
 	{
+		// If the user is not logged in, redirect them.
+		if (!$this->getUser())
+		{
+			$this->addFlash('error', 'You must be logged in to edit a comment.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		$entityManager = $this->getDoctrine()->getManager();
 
 		// Get the user.

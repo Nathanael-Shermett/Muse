@@ -26,6 +26,9 @@ class UserController extends AbstractController
 	 */
 	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder)
 	{
+		// Ensure the user logged in.
+		$this->denyAccessUnlessGranted('ROLE_USER', NULL, 'You must be logged in to access this page.');
+
 		$currentUser = $this->getUser();
 		$user = $currentUser;
 
@@ -150,6 +153,15 @@ class UserController extends AbstractController
 	 */
 	public function login(AuthenticationUtils $authenticationUtils)
 	{
+		// If the user is already logged in, redirect them.
+		if ($this->getUser())
+		{
+			$username = $this->getUser()->getUsername();
+			$this->addFlash('alert', "Just a heads up—you are currently logged in as $username.
+			If you are trying to switch accounts and log in as someone else, you can still do so below.
+			Otherwise, no further action is necessary.");
+		}
+
 		// Get the login error (if there is one).
 		$error = $authenticationUtils->getLastAuthenticationError();
 
@@ -170,7 +182,7 @@ class UserController extends AbstractController
 	 */
 	public function logout()
 	{
-		throw new \Exception('Logged out.');
+		throw new \Exception('You have been successfully logged out.');
 	}
 
 	/**
@@ -181,6 +193,14 @@ class UserController extends AbstractController
 	 */
 	public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
 	{
+		// If the user is logged in, redirect them.
+		if ($this->getUser())
+		{
+			$this->addFlash('error', 'You are currently logged in. In order to make a new account, please log out first.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		// 1) Build the form
 		$user = new User();
 		$form = $this->createForm(RegistrationFormType::class, $user);

@@ -21,6 +21,16 @@ class PostController extends AbstractController
 	 */
 	public function new(Request $request)
 	{
+		// If the user is not logged in, redirect them.
+		if (!$this->getUser())
+		{
+			$this->addFlash('error', 'You must be logged in to write posts on Muse.
+				If you do not have an account with us, we suggest creating one.
+				It is a one-time process and it is very easy.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		// Get the user.
 		$user = $this->getUser();
 
@@ -73,6 +83,14 @@ class PostController extends AbstractController
 	 */
 	public function delete($post_id, $csrf_token, Request $request)
 	{
+		// If the user is not logged in, redirect them.
+		if (!$this->getUser())
+		{
+			$this->addFlash('error', 'You must be logged in to delete a post.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		if ($this->isCsrfTokenValid("delete-post-$post_id", $csrf_token))
 		{
 			$entityManager = $this->getDoctrine()->getManager();
@@ -102,6 +120,14 @@ class PostController extends AbstractController
 	 */
 	public function edit($post_id, Request $request)
 	{
+		// If the user is not logged in, redirect them.
+		if (!$this->getUser())
+		{
+			$this->addFlash('error', 'You must be logged in to edit a post.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
 		// Get the user.
 		$user = $this->getUser();
 
@@ -166,44 +192,61 @@ class PostController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
-		// Get the user.
-		$user = $this->getUser();
-
 		// Throw an error if the post does not exist.
 		if (!$post)
 		{
-			throw $this->createNotFoundException("No post found for ID #$post_id.");
-		}
+			$this->addFlash('error', 'The post you are trying to view does not exist.');
 
-		// Build the comment form.
-		$comment = new Comment();
-		$form = $this->createForm(CommentType::class, $comment);
-		$comment->setTimestamp(new \DateTime());
-		$comment->setPost($post);
-		$comment->setUser($user);
-		$comment->setDeleted(FALSE);
-
-		// Handle the submission (will only happen on POST)
-		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid())
-		{
-			// Save the comment.
-			$entityManager = $this->getDoctrine()->getManager();
-			$entityManager->persist($comment);
-			$entityManager->flush();
-
-			// Redirect to this page (effectively resetting form values).
-			return $this->redirect($request->getUri());
+			return $this->redirectToRoute('homepage');
 		}
 
 		// Get the comments.
 		$comments = $post->getComments();
 
-		// Render everything.
-		return $this->render('post/view.html.twig', [
-			'post' => $post,
-			'form' => $form->createView(),
-			'comments' => $comments,
-		]);
+		// If the user is logged in, build the comment form.
+		if ($this->getUser())
+		{
+			// Get the user.
+			$user = $this->getUser();
+
+			// Build the comment form.
+			$comment = new Comment();
+			$form = $this->createForm(CommentType::class, $comment);
+			$comment->setTimestamp(new \DateTime());
+			$comment->setPost($post);
+			$comment->setUser($user);
+			$comment->setDeleted(FALSE);
+
+			// Handle the submission (will only happen on POST)
+			$form->handleRequest($request);
+			if ($form->isSubmitted() && $form->isValid())
+			{
+				// Save the comment.
+				$entityManager = $this->getDoctrine()->getManager();
+				$entityManager->persist($comment);
+				$entityManager->flush();
+
+				// Show a success message.
+				$this->addFlash('success', 'Your comment has been posted.');
+
+				// Redirect to this page (effectively resetting form values).
+				return $this->redirect($request->getUri());
+			}
+
+			// Render everything.
+			return $this->render('post/view.html.twig', [
+				'post' => $post,
+				'form' => $form->createView(),
+				'comments' => $comments,
+			]);
+		}
+		else
+		{
+			// Render everything.
+			return $this->render('post/view.html.twig', [
+				'post' => $post,
+				'comments' => $comments,
+			]);
+		}
 	}
 }
