@@ -123,6 +123,13 @@ $font_size_largest: 24pt;
 			}
 		}
 	}
+
+	&.empty *
+	{
+		font-family: $font2;
+		font-size: $font_size_large;
+		text-align: center;
+	}
 }
 
 @mixin markdown($size: "medium")

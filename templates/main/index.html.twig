@@ -4,11 +4,25 @@
 
 {% block body %}
 
-	<div id="masonry">
-		{% for post in posts %}
-			{% include 'main/card.html.twig' %}
-		{% endfor %}
-	</div>
+	{% if posts is not empty %}
+
+		<div id="masonry">
+			{% for post in posts %}
+				{% include 'main/card.html.twig' %}
+			{% endfor %}
+		</div>
+
+	{% else %}
+
+		<div class="wrapper">
+			<div class="box empty">
+				<p>No posts were found in the <b>{{ (category is empty ? supercategory : category)|humanize }}</b>
+					category.</p>
+				<p><a href="{{ path('new_post') }}">Why not write the first?</a></p>
+			</div>
+		</div>
+
+	{% endif %}
 
 {% endblock %}
 

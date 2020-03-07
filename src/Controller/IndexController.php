@@ -22,6 +22,10 @@ class IndexController extends AbstractController
 	{
 		$posts = $this->getDoctrine()->getRepository(Post::class)->findByCategory($supercategory, $category);
 
-		return $this->render('main/index.html.twig', ['posts' => $posts]);
+		return $this->render('main/index.html.twig', [
+			'posts' => $posts,
+			'supercategory' => $supercategory,
+			'category' => $category,
+		]);
 	}
 }
