@@ -163,7 +163,7 @@
 		start_masonry();
 
 		// Load links with a nifty animation.
-		$(document).on('click', 'a', function(e)
+		$(document).on('click', 'a:not(.sf-toolbar)', function(e)
 		{
 			// Only change the link behavior if the CTRL, ALT, and SHIFT keys are not pressed. This is to prevent us
 			// from messing up useful browser features (such as CTRL+click to open a link in a new tab).
