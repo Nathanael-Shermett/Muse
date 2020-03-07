@@ -19,7 +19,7 @@
 			<ul>
 				<li>
 					<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author"
-					   data-request-ajax>Written by <span>{{ post.user.username }}</span></a>
+					>Written by <span>{{ post.user.username }}</span></a>
 				</li>
 				<li>
 					<time>{{ post.timestamp|date("Y-m-d H:i:s")|ago }}</time>
@@ -29,7 +29,7 @@
 					or (is_granted('ROLE_ADMIN') or (is_granted('ROLE_MODERATOR') and not post.user.hasRole('ROLE_ADMIN'))) %}
 					<li>
 						<a href="{{ path('edit_post', {'post_id': post.id}) }}" class="edit"
-						   data-request-ajax>Edit</a>
+						>Edit</a>
 					</li>
 					<li>
 						<a href="{{ path('delete_post', {'post_id': post.id, 'csrf_token': csrf_token('delete-post-' ~ post.id)}) }}"
@@ -75,7 +75,7 @@
 						<ul>
 							<li>
 								<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author"
-								   data-request-ajax>Written by <span>{{ comment.user.username }}</span></a>
+								>Written by <span>{{ comment.user.username }}</span></a>
 							</li>
 							<li>
 								<time>{{ comment.timestamp|date("Y-m-d H:i:s")|ago }}</time>
@@ -85,7 +85,7 @@
 								or (is_granted('ROLE_ADMIN') or (is_granted('ROLE_MODERATOR') and not comment.user.hasRole('ROLE_ADMIN'))) %}
 								<li>
 									<a href="{{ path('edit_comment', {'comment_id': comment.id}) }}" class="edit"
-									   data-request-ajax>Edit</a>
+									>Edit</a>
 								</li>
 								<li>
 									<a href="{{ path('delete_comment', {'comment_id': comment.id, 'csrf_token': csrf_token('delete-comment-' ~ comment.id)}) }}"
@@ -97,7 +97,7 @@
 
 					<div class="sidebar">
 						<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author"
-						   data-request-ajax>
+						>
 							<img
 								src="https://www.gravatar.com/avatar/{{ comment.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=100"
 								alt="">

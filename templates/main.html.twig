@@ -11,47 +11,47 @@
 <body>
 
 <nav id="sidebar">
-	<a href="{{ path('homepage') }}" data-request-ajax>Please select a category:</a>
+	<a href="{{ path('homepage') }}">Please select a category:</a>
 	<ul>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'philosophy'}) }}"
 			   class="sidebar_link category_philosophy"
-			   data-request-ajax>Philosophy</a>
+			>Philosophy</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'science'}) }}"
 			   class="sidebar_link category_science"
-			   data-request-ajax>Science</a>
+			>Science</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'technology'}) }}"
 			   class="sidebar_link category_technology"
-			   data-request-ajax>Technology</a>
+			>Technology</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'innovation'}) }}"
 			   class="sidebar_link category_innovation"
-			   data-request-ajax>Innovation</a>
+			>Innovation</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'strategy'}) }}"
 			   class="sidebar_link category_strategy"
-			   data-request-ajax>Strategy</a>
+			>Strategy</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'politics'}) }}"
 			   class="sidebar_link category_politics"
-			   data-request-ajax>Politics</a>
+			>Politics</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'philosophy'}) }}"
 			   class="sidebar_link category_religion"
-			   data-request-ajax>Religion</a>
+			>Religion</a>
 		</li>
 		<li>
 			<a href="{{ path('view_posts', {'supercategory': 'society'}) }}"
 			   class="sidebar_link category_society"
-			   data-request-ajax>Society</a>
+			>Society</a>
 		</li>
 	</ul>
 
@@ -71,7 +71,7 @@
 
 			<div id="user_info">
 				<span>Logged in &nbsp;&rsaquo;&nbsp;</span>
-				<a href="{{ path('edit_profile') }}" data-request-ajax>
+				<a href="{{ path('edit_profile') }}">
 					{{ app.user.username }}
 					<img src="https://www.gravatar.com/avatar/{{ app.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=30"
 						 alt="">
@@ -80,10 +80,10 @@
 
 		{% else %}
 
-			<div id="site_title"><a href="{{ path('homepage') }}" data-request-ajax>Muse</a></div>
+			<div id="site_title"><a href="{{ path('homepage') }}">Muse</a></div>
 
 			{% if app.request.get('_route') != 'register' %}
-				<a class="register" href="{{ path('register') }}" data-request-ajax>Create an Account</a>
+				<a class="register" href="{{ path('register') }}">Create an Account</a>
 			{% endif %}
 
 			<form action="{{ path('login') }}" method="post">
@@ -140,35 +140,6 @@
 
 <script src="{{ asset('./build/app.js') }}"></script>
 <script>
-
-	// Load an address into <main> rather than navigating to it directly.
-	function load_content_ajax(address, fade_instantly)
-	{
-		if (fade_instantly)
-		{
-			$('main').fadeTo('fast', .25);
-			$('#loading_icon').fadeTo(500, 1);
-		}
-
-		// Request the page (but only its content).
-		$.post(address, { 'content_only' : true }, function(content)
-		{
-			// Fade out the main content area.
-			$('main').fadeOut(function()
-			{
-				// Load the new content (and fade the content area back in).
-				$('main').html(content).fadeTo('fast', 1);
-				$('#loading_icon').fadeTo('fast', 0);
-
-				// Scroll to the top of the page.
-				$('html,body').scrollTop(0);
-
-				// Initialize masonry.
-				start_masonry();
-			});
-		});
-	}
-
 	// Initializes masonry, where applicable.
 	function start_masonry()
 	{
@@ -191,8 +162,8 @@
 	{
 		start_masonry();
 
-		// Load links with the [data-request-ajax] attribute via AJAX.
-		$(document).on('click', 'a[data-request-ajax]', function(e)
+		// Load links with a nifty animation.
+		$(document).on('click', 'a', function(e)
 		{
 			// Only change the link behavior if the CTRL, ALT, and SHIFT keys are not pressed. This is to prevent us
 			// from messing up useful browser features (such as CTRL+click to open a link in a new tab).
@@ -202,36 +173,9 @@
 			if (!e.ctrlKey && !e.altKey && !e.shiftKey
 				&& $('#loading_icon').css('opacity') <= 0)
 			{
-				// Don't navigate to the link.
-				e.preventDefault();
-
-				// The URL we are navigating to.
-				let address = $(this).attr('href');
-
-				// Update the URL.
-				history.pushState({}, '', address);
-
-				// Load the content.
-				load_content_ajax(address, 1);
-
-				// Remove the "active" class from any currently active sidebar links.
-				$('#sidebar ul li.active').removeClass('active');
+				$('main').fadeTo('fast', .25);
+				$('#loading_icon').fadeTo(500, 1);
 			}
-		});
-
-		// If the history state changes (e.g. the "back" button is pressed), load the content via AJAX.
-		$(window).on('popstate', function()
-		{
-			load_content_ajax(document.location, 0);
-
-			// Remove the "active" class from any currently active sidebar links.
-			$('#sidebar ul li.active').removeClass('active');
-		});
-
-		// If a sidebar link is clicked, give it the "active" class.
-		$(document).on('click', 'a.sidebar_link', function(e)
-		{
-			$(this).parent().addClass('active');
 		});
 
 	});
