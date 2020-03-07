@@ -178,6 +178,11 @@
 			}
 		});
 
+		$(window).on('pageshow', function()
+		{
+			$('main').fadeTo('fast', 1);
+			$('#loading_icon').fadeTo(500, 0);
+		});
 	});
 </script>
 
