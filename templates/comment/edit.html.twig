@@ -13,7 +13,7 @@
 	{{ form_start(form) }}
 	<div class="write_comment">
 		{{ form_errors(form.content) }}
-		{{ form_widget(form.content, {attr: {class: 'highlighted editing short', placeholder: 'Type your edited comment here.'}}) }}
+		{{ form_widget(form.content, {attr: {class: 'highlighted editing short', placeholder: 'comment.edit.placeholder'}}) }}
 		<button type="submit"><span>Submit </span>✔</button>
 	</div>
 	{{ form_end(form) }}
