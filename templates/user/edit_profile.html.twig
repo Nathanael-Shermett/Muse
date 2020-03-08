@@ -55,7 +55,7 @@
 
 				</div>
 				<a href="https://gravatar.com"
-				   title="{% trans with {'%email%': app.user.email} %}Gravatar for %email%{% endtrans %}"
+				   title="{% trans with {'{email}': app.user.email} %}Gravatar for {email}{% endtrans %}"
 				   target="Gravatar">
 					<img src="https://www.gravatar.com/avatar/{{ app.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=256"
 						 alt="">
