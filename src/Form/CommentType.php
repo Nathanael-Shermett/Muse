@@ -18,13 +18,13 @@ class CommentType extends AbstractType
 	{
 		$builder->add('content', TextareaType::class, [
 			'constraints' => [
-				new Assert\NotBlank(['message' => 'Your comment cannot be blank.']),
 				new Assert\Length([
 					'min' => 10,
-					'minMessage' => 'Your comment must be at least {{ limit }} characters long.',
+					'minMessage' => 'comment.new.constraint.length.min',
 				]),
+				new Assert\NotBlank(['message' => 'comment.new.cannot_be_blank']),
 			],
-			'attr' => ['placeholder' => 'Write your comment here.'],
+			'attr' => ['placeholder' => 'comment.new.placeholder'],
 		]);
 	}
 

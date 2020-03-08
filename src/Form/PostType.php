@@ -20,42 +20,42 @@ class PostType extends AbstractType
 	{
 		$builder->add('title', TextType::class, [
 			'constraints' => [
-				new Assert\NotBlank(['message' => 'Please enter a title.']),
+				new Assert\NotBlank(['message' => 'post.new.title.constraint.not_blank']),
 				new Assert\Length([
 					'min' => 5,
 					'max' => 80,
-					'minMessage' => "Your post's title must be at least {{ limit }} characters long.",
-					'maxMessage' => "Your post's title cannot be longer than {{ limit }} characters.",
+					'minMessage' => 'post.new.title.constraint.length.min',
+					'maxMessage' => 'post.new.title.constraint.length.max',
 				]),
 			],
 			'attr' => [
 				'maxlength' => 80,
-				'placeholder' => 'Title',
+				'placeholder' => 'post.new.title.placeholder',
 			],
 
 		])->add('content', TextareaType::class, [
 			'constraints' => [
-				new Assert\NotBlank(['message' => 'This field cannot be blank.']),
+				new Assert\NotBlank(['message' => 'post.new.content.constraint.not_blank']),
 				new Assert\Length([
 					'min' => 10,
 					//'min'        => 500,
-					'minMessage' => 'Your post must be at least {{ limit }} characters long.',
+					'minMessage' => 'post.new.content.constraint.length.min',
 				]),
 			],
-			'attr' => ['placeholder' => 'Please provide a thorough explanation of your thoughts.'],
+			'attr' => ['placeholder' => 'post.new.content.placeholder'],
 
 		])->add('abstract', TextType::class, [
 			'constraints' => [
 				new Assert\Length([
 					'min' => 25,
-					'minMessage' => 'Abstracts are optional. However, if you wish to provide one, please make it more thorough.',
 					'max' => 150,
-					'maxMessage' => 'Your abstract must be 150 characters or less.',
+					'minMessage' => 'post.new.abstract.constraint.length.min',
+					'maxMessage' => 'post.new.abstract.constraint.length.max',
 				]),
 			],
 			'attr' => [
 				'maxlength' => 150,
-				'placeholder' => 'Abstract (optional; 150 characters or less)',
+				'placeholder' => 'post.new.abstract.placeholder',
 			],
 			'required' => FALSE,
 
@@ -65,11 +65,11 @@ class PostType extends AbstractType
 				new Assert\Count([
 					'min' => 1,
 					'max' => 2,
-					'minMessage' => 'Please select at least one category (but not more than two).',
-					'maxMessage' => 'You may not select more than two categories.',
+					'minMessage' => 'post.new.categories.constraint.length.min',
+					'maxMessage' => 'post.new.categories.constraint.length.max',
 				]),
 			],
-			'attr' => ['placeholder' => 'Categories (2 max)'],
+			'attr' => ['placeholder' => 'post.new.categories.placeholder'],
 			//'choices' => $categoriesArray,
 			'choice_attr' => function($category, $key, $value)
 			{

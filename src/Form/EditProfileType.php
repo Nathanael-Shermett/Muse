@@ -25,11 +25,11 @@ class EditProfileType extends AbstractType
 		$builder->add('currentPassword', PasswordType::class, [
 			'mapped' => FALSE,
 			'constraints' => [
-				new SecurityAssert\UserPassword(['message' => 'The password you entered is incorrect.']),
+				new SecurityAssert\UserPassword(['message' => 'user.edit.current_password.constraint.user_password']),
 			],
 			'attr' => [
 				'autocomplete' => 'current-password',
-				'placeholder' => 'Please enter your current password.',
+				'placeholder' => 'user.edit.password_placeholder',
 				'required' => 'required',
 			],
 
@@ -39,8 +39,8 @@ class EditProfileType extends AbstractType
 				new Assert\Length([
 					'min' => 2,
 					'max' => 25,
-					'minMessage' => "Your username must be at least {{ limit }} characters long.",
-					'maxMessage' => "Your username cannot be longer than {{ limit }} characters.",
+					'minMessage' => 'user.edit.username.constraint.length.min',
+					'maxMessage' => 'user.edit.username.constraint.length.max',
 				]),
 			],
 			'attr' => ['placeholder' => 'Username'],
@@ -48,37 +48,36 @@ class EditProfileType extends AbstractType
 		])->add('email', EmailType::class, [
 			'data' => $data['email'] ?? $user->getEmail(),
 			'constraints' => [
-				new Assert\Email(['message' => 'Please enter a valid email address.']),
+				new Assert\Email(['message' => 'user.edit.email.constraint.email']),
 				new Assert\Length([
 					'min' => 6,
 					'max' => 190,
-					'minMessage' => "Your email address cannot be shorter than {{ limit }} characters long.",
-					'maxMessage' => "Your email address cannot be longer than {{ limit }} characters.",
+					'minMessage' => 'user.edit.email.constraint.min',
+					'maxMessage' => 'user.edit.email.constraint.max',
 				]),
 			],
 			'attr' => ['placeholder' => 'Email'],
 
 		])->add('plainPassword', RepeatedType::class, [
 			'type' => PasswordType::class,
-			'invalid_message' => 'The provided passwords did not match.',
+			'invalid_message' => 'user.edit.password.constraint.invalid',
 			'first_options' => [
-				'label' => 'New Password',
 				'constraints' => [
 					new Assert\Length([
 						'min' => 8,
 						'max' => 4096,
-						'minMessage' => "For security reasons, your password must be at least {{ limit }} characters long.",
-						'maxMessage' => "Your password cannot be longer than {{ limit }} characters.",
+						'minMessage' => 'user.edit.password.constraint.length.min',
+						'maxMessage' => 'user.edit.password.constraint.length.max',
 					]),
 				],
 				'attr' => [
 					'autocomplete' => 'new-password',
-					'placeholder' => 'New Password',
+					'placeholder' => 'user.edit.new_password',
 				],
 
 			],
 			'second_options' => [
-				'attr' => ['placeholder' => 'New Password (again)'],
+				'attr' => ['placeholder' => 'user.edit.new_password_again'],
 
 			],
 		]);
@@ -86,10 +85,10 @@ class EditProfileType extends AbstractType
 		if ($currentUser->hasRole('ROLE_MODERATOR'))
 		{
 			$roles = [
-				'1. Administrator' => 'ROLE_ADMIN',
-				'2. Moderator' => 'ROLE_MODERATOR',
-				'3. User (normal)' => 'ROLE_USER',
-				'4. Banned' => 'ROLE_BANNED',
+				'user.edit.access_level.administrator' => 'ROLE_ADMIN',
+				'user.edit.access_level.moderator' => 'ROLE_MODERATOR',
+				'user.edit.access_level.user' => 'ROLE_USER',
+				'user.edit.access_level.banned' => 'ROLE_BANNED',
 			];
 
 			$builder->add('role', ChoiceType::class, [
@@ -111,12 +110,12 @@ class EditProfileType extends AbstractType
 
 				'group_by' => function()
 				{
-					return 'Select an Access Level:';
+					return 'user.edit.access_level.select';
 				},
 				'constraints' => [
 					new Assert\Choice([
 						'choices' => array_values($roles),
-						'message' => 'The access level you selected is invalid.',
+						'message' => 'user.edit.access_level.invalid',
 					]),
 				],
 				'label' => 'Access Level',

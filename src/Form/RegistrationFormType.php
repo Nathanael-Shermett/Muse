@@ -18,26 +18,26 @@ class RegistrationFormType extends AbstractType
 	{
 		$builder->add('username', TextType::class, [
 			'constraints' => [
-				new Assert\NotBlank(['message' => 'Please enter a username.']),
+				new Assert\NotBlank(['message' => 'user.register.username.constraint.not_blank']),
 				new Assert\Length([
 					'min' => 2,
 					'max' => 25,
-					'minMessage' => "Your username must be at least {{ limit }} characters long.",
-					'maxMessage' => "Your username cannot be longer than {{ limit }} characters.",
+					'minMessage' => 'user.register.username.constraint.length.min',
+					'maxMessage' => 'user.register.username.constraint.length.max',
 				]),
 			],
 			'attr' => ['placeholder' => 'Username'],
 
 		])->add('email', EmailType::class, [
 			'constraints' => [
-				new Assert\NotBlank(['message' => 'Please enter an email address.']),
+				new Assert\NotBlank(['message' => 'user.register.email.constraint.not_blank']),
 				new Assert\Length([
 					'min' => 6,
 					'max' => 190,
-					'minMessage' => "Your email address cannot be shorter than {{ limit }} characters long.",
-					'maxMessage' => "Your email address cannot be longer than {{ limit }} characters.",
+					'minMessage' => 'user.register.email.constraint.length.min',
+					'maxMessage' => 'user.register.email.constraint.length.max',
 				]),
-				new Assert\Email(['message' => 'Please enter a valid email address.']),
+				new Assert\Email(['message' => 'user.register.email.constraint.email']),
 			],
 			'attr' => ['placeholder' => 'Email'],
 
@@ -46,21 +46,21 @@ class RegistrationFormType extends AbstractType
 			'first_options' => [
 				'label' => 'Password',
 				'constraints' => [
-					new Assert\NotBlank(['message' => 'Please enter a password.']),
+					new Assert\NotBlank(['message' => 'user.register.password.constraint.not_blank']),
 					new Assert\Length([
 						'min' => 8,
 						'max' => 4096,
-						'minMessage' => "For security reasons, your password must be at least {{ limit }} characters long.",
-						'maxMessage' => "Your password cannot be longer than {{ limit }} characters.",
+						'minMessage' => 'user.register.password.constraint.length.min',
+						'maxMessage' => 'user.register.password.constraint.length.max',
 					]),
 				],
-				'attr' => ['placeholder' => 'Password'],
+				'attr' => ['placeholder' => 'user.register.password.placeholder'],
 			],
 			'second_options' => [
-				'attr' => ['placeholder' => 'Password (again)'],
+				'attr' => ['placeholder' => 'user.register.password.placeholder_again'],
 
 			],
-			'invalid_message' => 'The provided passwords did not match.',
+			'invalid_message' => 'user.register.password.constraint.invalid',
 		]);
 	}
 
