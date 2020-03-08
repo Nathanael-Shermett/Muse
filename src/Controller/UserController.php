@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserController extends AbstractController
 {
@@ -24,12 +25,12 @@ class UserController extends AbstractController
 	 * @Route("/profile/edit/{user_id}", name="edit_profile", defaults={"user_id" = NULL}, requirements={"user_id"="\d+"})
 	 * @return
 	 */
-	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder)
+	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
 		{
-			$this->addFlash('alert', 'You must be logged in to access the "edit profile" page.');
+			$this->addFlash('error', $t->trans('user.edit.must_be_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -46,7 +47,7 @@ class UserController extends AbstractController
 			// If the current user is not a moderator, redirect them.
 			if (!$currentUser->hasRole('ROLE_MODERATOR'))
 			{
-				$this->addFlash('error', 'Only site administrators and moderators can edit other users.');
+				$this->addFlash('error', $t->trans('user.edit.only_administrators_can_edit_other_users'));
 
 				return $this->redirectToRoute('edit_profile');
 			}
@@ -54,7 +55,7 @@ class UserController extends AbstractController
 			// If the user who is being edited is a moderator and the current user is not an administrator...
 			elseif ($user->hasRole('ROLE_MODERATOR') && !$currentUser->hasRole('ROLE_ADMIN'))
 			{
-				$this->addFlash('error', 'Only site administrators can edit other administrators and moderators.');
+				$this->addFlash('error', $t->trans('user.edit.only_administrators_can_edit_other_administrators'));
 
 				return $this->redirectToRoute('edit_profile');
 			}
@@ -91,21 +92,21 @@ class UserController extends AbstractController
 			if ($userByUsername instanceof User && $userByUsername != $user)
 			{
 				$usernameUnique = FALSE;
-				$this->addFlash('error', 'The username you provided belongs to another user and has not been updated.');
+				$this->addFlash('error', $t->trans('user.edit.username_taken'));
 			}
 
 			// If the email already exists in the database and does not belong to the current user.
 			if ($userByEmail instanceof User && $userByEmail != $user)
 			{
 				$emailUnique = FALSE;
-				$this->addFlash('error', 'The email you provided belongs to another user and has not been updated.');
+				$this->addFlash('error', $t->trans('user.edit.email_taken'));
 			}
 
 			// Update the username (if provided, and not a duplicate, and not the same as the current username).
 			if ($usernameUnique && !empty($data['username']) && $userByUsername != $user)
 			{
 				$user->setUsername($data['username']);
-				$this->addFlash('success', 'Your username has been updated.');
+				$this->addFlash('success', $t->trans('user.edit.username_updated'));
 				$usernameUpdated = TRUE;
 			}
 
@@ -113,7 +114,7 @@ class UserController extends AbstractController
 			if ($emailUnique && !empty($data['email']) && $userByEmail != $user)
 			{
 				$user->setEmail($data['email']);
-				$this->addFlash('success', 'Your email has been updated.');
+				$this->addFlash('success', $t->trans('user.edit.email_updated'));
 				$emailUpdated = TRUE;
 			}
 
@@ -123,7 +124,7 @@ class UserController extends AbstractController
 			{
 				$passwordEncoded = $passwordEncoder->encodePassword($user, $plainPassword);
 				$user->setPassword($passwordEncoded);
-				$this->addFlash('success', 'Your password has been updated.');
+				$this->addFlash('success', $t->trans('user.edit.password_updated'));
 				$passwordUpdated = TRUE;
 			}
 
@@ -135,30 +136,30 @@ class UserController extends AbstractController
 				{
 					if ($role == 'ROLE_ADMIN')
 					{
-						$this->addFlash('error', "You are not authorized to add new administrators.");
+						$this->addFlash('error', $t->trans('user.edit.not_authorized_to_add_administrators'));
 					}
 					else
 					{
-						$this->addFlash('error', "You are not authorized to add new moderators.");
+						$this->addFlash('error', $t->trans('user.edit.not_authorized_to_add_moderators'));
 					}
 				}
 				else
 				{
 					$user->setRole($role);
-					$this->addFlash('success', "{$user->getUsername()}'s access level has been updated.");
+					$this->addFlash('success', $t->trans('user.edit.access_level_updated', ['username' => $user->getUsername()]));
 					$roleUpdated = TRUE;
 				}
 			}
 
 			// There were no errors, but no changes have been made either.
-			if ($usernameUnique &&
-				$emailUnique &&
-				!$usernameUpdated &&
-				!$emailUpdated &&
-				!$passwordUpdated &&
-				!$roleUpdated)
+			if ($usernameUnique
+				&& $emailUnique
+				&& !$usernameUpdated
+				&& !$emailUpdated
+				&& !$passwordUpdated
+				&& !$roleUpdated)
 			{
-				$this->addFlash('alert', 'You did not provide any new data. Therefore, no changes have been made.');
+				$this->addFlash('alert', $t->trans('user.edit.no_changes'));
 			}
 
 			// Update the database.
@@ -179,15 +180,13 @@ class UserController extends AbstractController
 	 * @param AuthenticationUtils $authenticationUtils
 	 * @return string
 	 */
-	public function login(AuthenticationUtils $authenticationUtils)
+	public function login(AuthenticationUtils $authenticationUtils, TranslatorInterface $t)
 	{
 		// If the user is already logged in, redirect them.
 		if ($this->getUser())
 		{
 			$username = $this->getUser()->getUsername();
-			$this->addFlash('alert', "Just a heads up—you are currently logged in as $username.
-			If you are trying to switch accounts and log in as someone else, you can still do so below.
-			Otherwise, no further action is necessary.");
+			$this->addFlash('alert', $t->trans('user.login.already_logged_in', ['username' => $username]));
 		}
 
 		// Get the login error (if there is one).
@@ -199,7 +198,7 @@ class UserController extends AbstractController
 		// Display an error message.
 		if ($error)
 		{
-			$this->addFlash('error', 'The username and password you entered did not match any existing accounts.');
+			$this->addFlash('error', 'user.login.invalid_credentials');
 		}
 
 		return $this->render('user/login.html.twig', ['last_username' => $lastUsername]);
@@ -208,9 +207,9 @@ class UserController extends AbstractController
 	/**
 	 * @Route("/logout", name="logout", methods={"GET"})
 	 */
-	public function logout()
+	public function logout(TranslatorInterface $t)
 	{
-		throw new \Exception('You have been successfully logged out.');
+		throw new \Exception($t->trans('user.login.logout_success'));
 	}
 
 	/**
@@ -219,12 +218,12 @@ class UserController extends AbstractController
 	 * @Route("/register", name="register")
 	 * @return
 	 */
-	public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+	public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
 		// If the user is logged in, redirect them.
 		if ($this->getUser())
 		{
-			$this->addFlash('error', 'You are currently logged in. In order to make a new account, please log out first.');
+			$this->addFlash('error', $t->trans('user.register.already_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -257,7 +256,7 @@ class UserController extends AbstractController
 	 * @Route("/profile/view/{user_id}", name="view_profile", requirements={"user_id"="\d+"})
 	 * @return
 	 */
-	public function view($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder)
+	public function view($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
 		// Get the user.
 		$user = $this->getDoctrine()->getRepository(User::class)->find($user_id);
@@ -265,7 +264,7 @@ class UserController extends AbstractController
 		// Throw an error if the user does not exist.
 		if (!$user)
 		{
-			$this->addFlash('error', 'This user does not exist.');
+			$this->addFlash('error', $t->trans('user.view.does_not_exist'));
 
 			return $this->redirectToRoute('homepage');
 		}

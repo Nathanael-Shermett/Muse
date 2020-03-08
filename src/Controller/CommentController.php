@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CommentController extends AbstractController
 {
@@ -19,12 +20,12 @@ class CommentController extends AbstractController
 	 * @Route("/comment/delete/{comment_id}/{csrf_token}", name="delete_comment", defaults={"csrf_token"=""}, requirements={"comment_id"="\d+"})
 	 * @return
 	 */
-	public function delete($comment_id, $csrf_token, Request $request)
+	public function delete($comment_id, $csrf_token, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
 		{
-			$this->addFlash('error', 'You must be logged in to delete a comment.');
+			$this->addFlash('error', $t->trans('comment.delete.must_be_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -38,7 +39,7 @@ class CommentController extends AbstractController
 		// Throw an error if the comment does not exist.
 		if (!$comment)
 		{
-			$this->addFlash('error', 'The comment you are attempting to delete does not exist.');
+			$this->addFlash('error', $t->trans('comment.delete.does_not_exist'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -49,21 +50,21 @@ class CommentController extends AbstractController
 		// Throw an error if the post does not exist.
 		if (!$post)
 		{
-			$this->addFlash('error', 'The comment you are attempting to delete does not seem to correspond with an actual post. Therefore, it cannot be deleted.');
+			$this->addFlash('error', $t->trans('comment.delete.orphaned'));
 
 			return $this->redirectToRoute('homepage');
 		}
 
 		if ($comment->deleted())
 		{
-			$this->addFlash('error', 'The comment you are trying to delete has actually already been deleted. No further action is necessary on your part.');
+			$this->addFlash('error', $t->trans('comment.delete.already_deleted'));
 
 			return $this->redirectToRoute('homepage');
 		}
 
 		if ($post->deleted())
 		{
-			$this->addFlash('error', 'The comment you are trying to delete belongs to a post that has been deleted, and as such the comment cannot be removed.');
+			$this->addFlash('error', $t->trans('comment.delete.post_deleted'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -75,7 +76,7 @@ class CommentController extends AbstractController
 				&& !$user->hasRole('ROLE_ADMIN')
 				&& $user->hasRole('ROLE_MODERATOR'))
 			{
-				$this->addFlash('error', "Only administrators are allowed to delete other administrators' comments.");
+				$this->addFlash('error', $t->trans('comment.delete.only_administrators_can_delete_other_administrators'));
 
 				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 			}
@@ -86,7 +87,7 @@ class CommentController extends AbstractController
 				$comment->setDeleted(TRUE);
 				$entityManager->flush();
 
-				$this->addFlash('success', "The comment has been deleted.");
+				$this->addFlash('success', $t->trans('comment.delete.success'));
 
 				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 			}
@@ -94,17 +95,14 @@ class CommentController extends AbstractController
 			// Invalid deletion attempt.
 			else
 			{
-				$this->addFlash('error', 'You are not authorized to delete this comment.');
+				$this->addFlash('error', $t->trans('comment.delete.not_authorized'));
 
 				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 			}
 		}
 		else
 		{
-			$this->addFlash('error', "
-				An unauthorized attempt was made to delete a comment, but we intercepted it.
-				You are most likely receiving this message because you clicked a link you shouldn't have.
-				If you believe you are receiving this message in error, please try again.");
+			$this->addFlash('error', $t->trans('comment.delete.csrf_invalid'));
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 		}
@@ -115,12 +113,12 @@ class CommentController extends AbstractController
 	 * @Route("/comment/edit/{comment_id}", name="edit_comment", requirements={"comment_id"="\d+"})
 	 * @return
 	 */
-	public function edit($comment_id, Request $request)
+	public function edit($comment_id, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
 		{
-			$this->addFlash('error', 'You must be logged in to edit a comment.');
+			$this->addFlash('error', $t->trans('comment.edit.must_be_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -135,7 +133,7 @@ class CommentController extends AbstractController
 		// Throw an error if the comment does not exist.
 		if (!$comment)
 		{
-			$this->addFlash('error', 'The comment you are attempting to edit does not exist.');
+			$this->addFlash('error', $t->trans('comment.edit.does_not_exist'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -146,21 +144,21 @@ class CommentController extends AbstractController
 		// Throw an error if the post does not exist.
 		if (!$post)
 		{
-			$this->addFlash('error', 'The comment you are attempting to edit does not seem to correspond with an actual post. Therefore, it cannot be edited.');
+			$this->addFlash('error', $t->trans('comment.edit.orphaned'));
 
 			return $this->redirectToRoute('homepage');
 		}
 
 		if ($comment->deleted())
 		{
-			$this->addFlash('error', 'The comment you are trying to edit has been deleted and can no longer be changed.');
+			$this->addFlash('error', $t->trans('comment.edit.already_deleted'));
 
 			return $this->redirectToRoute('homepage');
 		}
 
 		if ($post->deleted())
 		{
-			$this->addFlash('error', 'The comment you are trying to edit belongs to a post that has been deleted, and as such the comment cannot be changed.');
+			$this->addFlash('error', $t->trans('comment.edit.post_deleted'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -170,7 +168,7 @@ class CommentController extends AbstractController
 			&& !$user->hasRole('ROLE_ADMIN')
 			&& $user->hasRole('ROLE_MODERATOR'))
 		{
-			$this->addFlash('error', "Only administrators are allowed to edit other administrators' comments.");
+			$this->addFlash('error', $t->trans('comment.edit.only_administrators_can_edit_other_administrators'));
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 		}
@@ -214,7 +212,7 @@ class CommentController extends AbstractController
 		// Invalid edit attempt.
 		else
 		{
-			$this->addFlash('error', 'You are not authorized to edit this comment.');
+			$this->addFlash('error', $t->trans('comment.edit.not_authorized'));
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
 		}

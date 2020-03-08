@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Services\ContentRedirect;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PostController extends AbstractController
 {
@@ -20,14 +20,12 @@ class PostController extends AbstractController
 	 * @Route("/post/new", name="new_post")
 	 * @return
 	 */
-	public function new(Request $request)
+	public function new(Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
 		{
-			$this->addFlash('error', 'You must be logged in to write posts on Muse.
-				If you do not have an account with us, we suggest creating one.
-				It is a one-time process and it is very easy.');
+			$this->addFlash('error', $t->trans('post.new.must_be_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -82,12 +80,12 @@ class PostController extends AbstractController
 	 * @Route("/post/delete/{post_id}/{csrf_token}", name="delete_post", defaults={"csrf_token"=""}, requirements={"post_id"="\d+"})
 	 * @return
 	 */
-	public function delete($post_id, $csrf_token, Request $request)
+	public function delete($post_id, $csrf_token, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
 		{
-			$this->addFlash('error', 'You must be logged in to delete a post.');
+			$this->addFlash('error', $t->trans('post.delete.must_be_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -105,7 +103,7 @@ class PostController extends AbstractController
 				&& !$user->hasRole('ROLE_ADMIN')
 				&& $user->hasRole('ROLE_MODERATOR'))
 			{
-				$this->addFlash('error', "Only administrators are allowed to delete other administrators' posts.");
+				$this->addFlash('error', $t->trans('post.delete.only_administrators_can_delete_other_administrators'));
 
 				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 			}
@@ -115,7 +113,7 @@ class PostController extends AbstractController
 			{
 				$post->setDeleted(TRUE);
 				$entityManager->flush();
-				$this->addFlash('success', 'The post has been deleted.');
+				$this->addFlash('success', $t->trans('post.delete.success'));
 
 				return $this->redirectToRoute('homepage');
 			}
@@ -123,17 +121,14 @@ class PostController extends AbstractController
 			// Invalid deletion attempt.
 			else
 			{
-				$this->addFlash('error', 'You are not authorized to delete this post.');
+				$this->addFlash('error', $t->trans('post.delete.not_authorized'));
 
 				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 			}
 		}
 		else
 		{
-			$this->addFlash('error', "
-				An unauthorized attempt was made to delete this post, but we intercepted it.
-				You are most likely receiving this message because you clicked a link you shouldn't have.
-				If you believe you are receiving this message in error, please try again.");
+			$this->addFlash('error', $t->trans('post.delete.csrf_error'));
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 		}
@@ -144,12 +139,12 @@ class PostController extends AbstractController
 	 * @Route("/post/edit/{post_id}", name="edit_post", requirements={"post_id"="\d+"})
 	 * @return
 	 */
-	public function edit($post_id, Request $request)
+	public function edit($post_id, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
 		{
-			$this->addFlash('error', 'You must be logged in to edit a post.');
+			$this->addFlash('error', $t->trans('post.edit.must_be_logged_in'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -166,7 +161,7 @@ class PostController extends AbstractController
 			&& !$user->hasRole('ROLE_ADMIN')
 			&& $user->hasRole('ROLE_MODERATOR'))
 		{
-			$this->addFlash('error', "Only administrators are allowed to edit other administrators' posts.");
+			$this->addFlash('error', $t->trans('post.edit.only_administrators_can_edit_other_administrators'));
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 		}
@@ -204,6 +199,8 @@ class PostController extends AbstractController
 				$entityManager->persist($post);
 				$entityManager->flush();
 
+				$this->addFlash('success', $t->trans('post.edit.success'));
+
 				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 			}
 
@@ -216,7 +213,7 @@ class PostController extends AbstractController
 		// Invalid edit attempt.
 		else
 		{
-			$this->addFlash('error', 'You are not authorized to edit this post.');
+			$this->addFlash('error', $t->trans('post.edit.not_authorized'));
 
 			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
 		}
@@ -228,14 +225,14 @@ class PostController extends AbstractController
 	 * @Route("/post/new_comment/{post}", name="new_comment")
 	 * @return
 	 */
-	public function view($post_id, Request $request)
+	public function view($post_id, Request $request, TranslatorInterface $t)
 	{
 		// Get the post.
 		$post = $this->getDoctrine()->getRepository(Post::class)->find($post_id);
 
 		if ($post->deleted())
 		{
-			$this->addFlash('error', 'The post you are trying to view has been deleted and can no longer be viewed.');
+			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -243,7 +240,7 @@ class PostController extends AbstractController
 		// Throw an error if the post does not exist.
 		if (!$post)
 		{
-			$this->addFlash('error', 'The post you are trying to view does not exist.');
+			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
 
 			return $this->redirectToRoute('homepage');
 		}
@@ -275,7 +272,7 @@ class PostController extends AbstractController
 				$entityManager->flush();
 
 				// Show a success message.
-				$this->addFlash('success', 'Your comment has been posted.');
+				$this->addFlash('success', $t->trans('comment.new.success'));
 
 				// Redirect to this page (effectively resetting form values).
 				return $this->redirect($request->getUri());
