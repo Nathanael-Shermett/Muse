@@ -13,23 +13,26 @@
 						 title="{{ user.username }}" alt="">
 				</div>
 
-				<div id="member_since">Member since
-					<time>{{ user.userSince|date('F j, Y') }}</time>
+				<div id="member_since">
+
+					{% trans with {'%date%' : user.userSince|date('F j, Y')} %}
+						Member since %date%
+					{% endtrans %}
 				</div>
 
 				{% if user.comments|length > 0 %}
 
-					<h2>Comments</h2>
+					<h2>{{ 'Comments'|trans }}</h2>
 					<table>
 						<tr>
 							<th style="min-width:150px; width:20%;">
-								Original Thread
+								{{ 'Original Thread'|trans }}
 							</th>
 							<th style="min-width:200px; width:30%;">
-								Date Posted
+								{{ 'Date Posted'|trans }}
 							</th>
 							<th>
-								Abstract
+								{{ 'Abstract'|trans }}
 							</th>
 						</tr>
 
@@ -38,8 +41,7 @@
 								<tr>
 									<td>
 										<a class="cover_row"
-										   href="{{ path('view_post', {'post_id' : comment.post.id}) }}"
-										></a>
+										   href="{{ path('view_post', {'post_id' : comment.post.id}) }}"></a>
 										{{ comment.post.title }}
 									</td>
 									<td>

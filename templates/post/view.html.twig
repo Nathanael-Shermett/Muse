@@ -18,8 +18,11 @@
 		<nav>
 			<ul>
 				<li>
-					<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author"
-					>Written by <span>{{ post.user.username }}</span></a>
+					<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author">
+						{% trans with {'%username%': '</span>' ~ post.user.username ~ '</span>'} %}
+							Written by %username%
+						{% endtrans %}
+					</a>
 				</li>
 				<li>
 					<time>{{ post.timestamp|date("Y-m-d H:i:s")|ago }}</time>
@@ -28,12 +31,11 @@
 				{% if app.user and app.user.id == post.user.id
 					or (is_granted('ROLE_ADMIN') or (is_granted('ROLE_MODERATOR') and not post.user.hasRole('ROLE_ADMIN'))) %}
 					<li>
-						<a href="{{ path('edit_post', {'post_id': post.id}) }}" class="edit"
-						>Edit</a>
+						<a href="{{ path('edit_post', {'post_id': post.id}) }}" class="edit">{{ 'Edit'|trans }}</a>
 					</li>
 					<li>
 						<a href="{{ path('delete_post', {'post_id': post.id, 'csrf_token': csrf_token('delete-post-' ~ post.id)}) }}"
-						   class="delete">Delete</a>
+						   class="delete">{{ 'Delete'|trans }}</a>
 					</li>
 				{% endif %}
 			</ul>
@@ -56,8 +58,8 @@
 			{{ form_start(form) }}
 			<div class="write_comment">
 				{{ form_errors(form.content) }}
-				{{ form_widget(form.content, {attr: {class: 'short', placeholder: 'Write your comment here.'}}) }}
-				<button type="submit"><span>Submit </span>✔</button>
+				{{ form_widget(form.content, {attr: {class: 'short'}}) }}
+				<button type="submit"><span>{{ 'Submit'|trans }} </span>✔</button>
 			</div>
 			{{ form_end(form) }}
 
@@ -74,8 +76,11 @@
 					<nav>
 						<ul>
 							<li>
-								<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author"
-								>Written by <span>{{ comment.user.username }}</span></a>
+								<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author">
+									{% trans with {'%username%': '</span>' ~ comment.user.username ~ '</span>'} %}
+										Written by %username%
+									{% endtrans %}
+								</a>
 							</li>
 							<li>
 								<time>{{ comment.timestamp|date("Y-m-d H:i:s")|ago }}</time>
@@ -84,20 +89,19 @@
 							{% if app.user and app.user.id == comment.user.id
 								or (is_granted('ROLE_ADMIN') or (is_granted('ROLE_MODERATOR') and not comment.user.hasRole('ROLE_ADMIN'))) %}
 								<li>
-									<a href="{{ path('edit_comment', {'comment_id': comment.id}) }}" class="edit"
-									>Edit</a>
+									<a href="{{ path('edit_comment', {'comment_id': comment.id}) }}"
+									   class="edit">{{ 'Edit'|trans }}</a>
 								</li>
 								<li>
 									<a href="{{ path('delete_comment', {'comment_id': comment.id, 'csrf_token': csrf_token('delete-comment-' ~ comment.id)}) }}"
-									   class="delete">Delete</a>
+									   class="delete">{{ 'Delete'|trans }}</a>
 								</li>
 							{% endif %}
 						</ul>
 					</nav>
 
 					<div class="sidebar">
-						<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author"
-						>
+						<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author">
 							<img
 								src="https://www.gravatar.com/avatar/{{ comment.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=100"
 								alt="">

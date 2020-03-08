@@ -28,29 +28,37 @@ class PostType extends AbstractType
 					'maxMessage' => "Your post's title cannot be longer than {{ limit }} characters.",
 				]),
 			],
-			'attr' => ['maxlength' => 80],
+			'attr' => [
+				'maxlength' => 80,
+				'placeholder' => 'Title',
+			],
 
 		])->add('content', TextareaType::class, [
 			'constraints' => [
-				new Assert\NotBlank(['message' => 'Please provide a thorough abstract of your thoughts.']),
+				new Assert\NotBlank(['message' => 'This field cannot be blank.']),
 				new Assert\Length([
 					'min' => 10,
 					//'min'        => 500,
 					'minMessage' => 'Your post must be at least {{ limit }} characters long.',
 				]),
 			],
+			'attr' => ['placeholder' => 'Please provide a thorough explanation of your thoughts.'],
 
 		])->add('abstract', TextType::class, [
 			'constraints' => [
 				new Assert\Length([
 					'min' => 25,
-					'minMessage' => 'Abstracts are optional. If you wish to provide one, please make it more thorough.',
+					'minMessage' => 'Abstracts are optional. However, if you wish to provide one, please make it more thorough.',
 					'max' => 150,
 					'maxMessage' => 'Your abstract must be 150 characters or less.',
 				]),
 			],
-			'attr' => ['maxlength' => 150],
+			'attr' => [
+				'maxlength' => 150,
+				'placeholder' => 'Abstract (optional; 150 characters or less)',
+			],
 			'required' => FALSE,
+
 		])->add('categories', EntityType::class, [
 			'class' => PostCategory::class,
 			'constraints' => [

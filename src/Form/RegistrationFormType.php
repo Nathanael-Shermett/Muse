@@ -20,39 +20,45 @@ class RegistrationFormType extends AbstractType
 			'constraints' => [
 				new Assert\NotBlank(['message' => 'Please enter a username.']),
 				new Assert\Length([
-					'min'        => 2,
-					'max'        => 25,
+					'min' => 2,
+					'max' => 25,
 					'minMessage' => "Your username must be at least {{ limit }} characters long.",
 					'maxMessage' => "Your username cannot be longer than {{ limit }} characters.",
 				]),
 			],
+			'attr' => ['placeholder' => 'Username'],
+
 		])->add('email', EmailType::class, [
 			'constraints' => [
 				new Assert\NotBlank(['message' => 'Please enter an email address.']),
 				new Assert\Length([
-					'min'        => 6,
-					'max'        => 190,
+					'min' => 6,
+					'max' => 190,
 					'minMessage' => "Your email address cannot be shorter than {{ limit }} characters long.",
 					'maxMessage' => "Your email address cannot be longer than {{ limit }} characters.",
 				]),
 				new Assert\Email(['message' => 'Please enter a valid email address.']),
 			],
+			'attr' => ['placeholder' => 'Email'],
+
 		])->add('plainPassword', RepeatedType::class, [
-			'type'           => PasswordType::class,
-			'first_options'  => [
-				'label'       => 'Password',
+			'type' => PasswordType::class,
+			'first_options' => [
+				'label' => 'Password',
 				'constraints' => [
 					new Assert\NotBlank(['message' => 'Please enter a password.']),
 					new Assert\Length([
-						'min'        => 8,
-						'max'        => 4096,
+						'min' => 8,
+						'max' => 4096,
 						'minMessage' => "For security reasons, your password must be at least {{ limit }} characters long.",
 						'maxMessage' => "Your password cannot be longer than {{ limit }} characters.",
 					]),
 				],
+				'attr' => ['placeholder' => 'Password'],
 			],
 			'second_options' => [
-				'label'           => 'Password (again)',
+				'attr' => ['placeholder' => 'Password (again)'],
+
 			],
 			'invalid_message' => 'The provided passwords did not match.',
 		]);

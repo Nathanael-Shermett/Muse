@@ -20,10 +20,11 @@ class CommentType extends AbstractType
 			'constraints' => [
 				new Assert\NotBlank(['message' => 'Your comment cannot be blank.']),
 				new Assert\Length([
-					'min'        => 10,
+					'min' => 10,
 					'minMessage' => 'Your comment must be at least {{ limit }} characters long.',
 				]),
 			],
+			'attr' => ['placeholder' => 'Write your comment here.'],
 		]);
 	}
 

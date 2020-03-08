@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}A Community for Thinkers{% endblock %}
+{% block title %}{{ 'A Community for Thinkers'|trans }}{% endblock %}
 
 {% block body %}
 
@@ -16,7 +16,7 @@
 
 		<div class="wrapper">
 			<div class="box empty">
-				<p>No posts were found in the <b>{{ (category is empty ? supercategory : category)|humanize }}</b>
+				<p>No posts were found in the <b>{{ (category is empty ? supercategory : category)|humanize|trans }}</b>
 					category.</p>
 				<p><a href="{{ path('new_post') }}">Why not write the first?</a></p>
 			</div>

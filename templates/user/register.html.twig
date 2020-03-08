@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create an Account{% endblock %}
+{% block title %}{{ 'Create an Account'|trans }}{% endblock %}
 
 {% block body %}
 
@@ -8,18 +8,18 @@
 		{{ form_start(form) }}
 
 		{{ form_errors(form.username) }}
-		{{ form_widget(form.username, {attr: {placeholder: form.username.vars.name|humanize}}) }}
+		{{ form_widget(form.username) }}
 
 		{{ form_errors(form.email) }}
-		{{ form_widget(form.email, {attr: {placeholder: form.email.vars.name|humanize}}) }}
+		{{ form_widget(form.email) }}
 
 		{{ form_errors(form.plainPassword.first) }}
-		{{ form_widget(form.plainPassword.first, {attr: {placeholder: form.plainPassword.first.vars.label|humanize}}) }}
+		{{ form_widget(form.plainPassword.first) }}
 
 		{{ form_errors(form.plainPassword.second) }}
-		{{ form_widget(form.plainPassword.second, {attr: {placeholder: form.plainPassword.second.vars.label|humanize}}) }}
+		{{ form_widget(form.plainPassword.second) }}
 
-		<button type="submit">Create Account</button>
+		<button type="submit">{{ 'Create Account'|trans }}</button>
 		{{ form_end(form) }}
 	</div>
 

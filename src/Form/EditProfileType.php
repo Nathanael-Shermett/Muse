@@ -24,14 +24,15 @@ class EditProfileType extends AbstractType
 
 		$builder->add('currentPassword', PasswordType::class, [
 			'mapped' => FALSE,
-			'attr' => [
-				'required' => 'required',
-				'autocomplete' => 'current-password',
-			],
-			'label' => 'Please enter your current password.',
 			'constraints' => [
 				new SecurityAssert\UserPassword(['message' => 'The password you entered is incorrect.']),
 			],
+			'attr' => [
+				'autocomplete' => 'current-password',
+				'placeholder' => 'Please enter your current password.',
+				'required' => 'required',
+			],
+
 		])->add('username', TextType::class, [
 			'data' => $data['username'] ?? $user->getUsername(),
 			'constraints' => [
@@ -42,6 +43,8 @@ class EditProfileType extends AbstractType
 					'maxMessage' => "Your username cannot be longer than {{ limit }} characters.",
 				]),
 			],
+			'attr' => ['placeholder' => 'Username'],
+
 		])->add('email', EmailType::class, [
 			'data' => $data['email'] ?? $user->getEmail(),
 			'constraints' => [
@@ -53,11 +56,12 @@ class EditProfileType extends AbstractType
 					'maxMessage' => "Your email address cannot be longer than {{ limit }} characters.",
 				]),
 			],
+			'attr' => ['placeholder' => 'Email'],
+
 		])->add('plainPassword', RepeatedType::class, [
 			'type' => PasswordType::class,
 			'invalid_message' => 'The provided passwords did not match.',
 			'first_options' => [
-				'attr' => ['autocomplete' => 'new-password'],
 				'label' => 'New Password',
 				'constraints' => [
 					new Assert\Length([
@@ -67,9 +71,15 @@ class EditProfileType extends AbstractType
 						'maxMessage' => "Your password cannot be longer than {{ limit }} characters.",
 					]),
 				],
+				'attr' => [
+					'autocomplete' => 'new-password',
+					'placeholder' => 'New Password',
+				],
+
 			],
 			'second_options' => [
-				'label' => 'New Password (again)',
+				'attr' => ['placeholder' => 'New Password (again)'],
+
 			],
 		]);
 

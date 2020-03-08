@@ -7,18 +7,18 @@
 	{{ form_start(form) }}
 
 	{{ form_errors(form.title) }}
-	{{ form_widget(form.title, {attr: {placeholder: form.title.vars.name|humanize}}) }}
+	{{ form_widget(form.title) }}
 
 	{{ form_errors(form.content) }}
-	{{ form_widget(form.content, {attr: {class: 'tall', placeholder: form.content.vars.name|humanize}}) }}
+	{{ form_widget(form.content, {attr: {class: 'tall'} }) }}
 
 	{{ form_errors(form.abstract) }}
-	{{ form_widget(form.abstract, {attr: {placeholder: form.abstract.vars.name|humanize ~ ' (optional; 150 characters or less)'}}) }}
+	{{ form_widget(form.abstract) }}
 
 	{{ form_errors(form.categories) }}
 	{{ form_widget(form.categories) }}
 
-	<button type="submit">Submit</button>
+	<button type="submit">{{ 'Submit'|trans }}</button>
 	{{ form_end(form) }}
 
 {% endblock %}
@@ -30,19 +30,20 @@
 			dropdownDirection : 'up',
 			maxItems : 2,
 			plugins : ['dropdown_direction', 'remove_button'],
-			onInitialize : function ()
+			onInitialize : function()
 			{
 				var s = this, children = this.revertSettings.$children;
-				if (children.first().is('optgroup')) {
+				if (children.first().is('optgroup'))
+				{
 					children = children.find('option');
 				}
-				children.each(function ()
+				children.each(function()
 				{
 					$.extend(s.options[this.value], $(this).data());
 				});
 			},
 			render : {
-				option : function (item, escape)
+				option : function(item, escape)
 				{
 					let base_url = '{{ url('base_url') }}';
 					return '' +
