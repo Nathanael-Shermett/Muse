@@ -88,7 +88,7 @@
 					   value=""
 					   placeholder="{{ 'Username'|trans }}"
 					   tabindex="1"
-					   required/>
+					   required>
 
 				<label for="password">{{ 'Password'|trans }}</label>
 				<input type="password"
@@ -96,7 +96,7 @@
 					   name="_password"
 					   placeholder="{{ 'Password'|trans }}"
 					   tabindex="2"
-					   required/>
+					   required>
 			</form>
 
 		{% endif %}
@@ -123,25 +123,24 @@
 	</main>
 
 	<footer>
-		Muse &copy; 2020.<br>
+		Muse &copy; 2020<br>
 
 		{{ 'Edit'|trans }}
 
-		{% trans with {'%Nathanael%': '<a href="http://nathanael.shermett.me" target="Nathanael">Nathanael Shermett</a>'} %}
-			Designed and developed by %Nathanael%.
+		{% trans with {'{Nathanael}': '<a href="http://nathanael.shermett.me" target="Nathanael">Nathanael Shermett</a>'} %}
+			Designed and developed by {Nathanael}
 		{% endtrans %}
 
 		<br>
 
-		{% trans with {'%Icons8%': '<a href="https://icons8.com" target="Icons8">Icons8</a>'} %}
-			Icons provided by %Icons8%.
+		{% trans with {'{Icons8}': '<a href="https://icons8.com" target="Icons8">Icons8</a>'} %}
+			Icons provided by {Icons8}
 		{% endtrans %}
-
 
 		<br>
 
-		{% trans with {'%GitHub%': '<a href="https://github.com/Nathanael-Shermett/Muse" target="GitHub">GitHub</a>'} %}
-			Contribute to Muse on %GitHub%.
+		{% trans with {'{GitHub}': '<a href="https://github.com/Nathanael-Shermett/Muse" target="GitHub">GitHub</a>'} %}
+			Contribute to Muse on {GitHub}
 		{% endtrans %}
 
 

@@ -15,8 +15,8 @@
 
 				<div id="member_since">
 
-					{% trans with {'%date%' : user.userSince|date('F j, Y')} %}
-						Member since %date%
+					{% trans with {'{date}' : user.userSince|date('F j, Y')} %}
+						profile.member_since
 					{% endtrans %}
 				</div>
 
