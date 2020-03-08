@@ -146,7 +146,7 @@ class UserController extends AbstractController
 				else
 				{
 					$user->setRole($role);
-					$this->addFlash('success', $t->trans('user.edit.access_level_updated', ['username' => $user->getUsername()]));
+					$this->addFlash('success', $t->trans('user.edit.access_level.updated', ['username' => $user->getUsername()]));
 					$roleUpdated = TRUE;
 				}
 			}
