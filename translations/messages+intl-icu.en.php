@@ -6,7 +6,7 @@ $messages = [
 	'Account Settings',
 	'A Community for Thinkers',
 	'Comments',
-	'Contribute to Muse on {GitHub}',
+	'Contribute to Muse on {GitHub}!',
 	'Create an Account',
 	'Create Account',
 	'Date Posted',
@@ -150,7 +150,7 @@ $messages = [
 
 	// Miscellaneous messages.
 	'profile.member_since' => 'Member since {date}',
-	'profile.if_you_want_to_change_email' => 'If you want to change it, simply click on your current profile picture (to the right) and set up your Gravatar account.',
+	'profile.if_you_want_to_change_email' => 'If you want to change it, simply click on your current profile picture (as shown) and set up your Gravatar account.',
 	'profile.to_display_your_profile' => 'To display your profile picture, Muse uses the public Gravatar associated with your email	address. Your email address is:',
 ];
 
