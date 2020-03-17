@@ -13,12 +13,14 @@ $messages = [
 	'Delete',
 	'Designed and developed by {Nathanael}',
 	'Edit',
+	'Email',
 	'Gravatar for {email}',
 	'Icons provided by {Icons8}',
 	'Innovation',
 	'Logged in',
 	'Logout',
 	'Original Thread',
+	'Password',
 	'Philosophy',
 	'Politics',
 	'Religion',
@@ -28,6 +30,8 @@ $messages = [
 	'Submit',
 	'Technology',
 	'Update Account',
+	'Username',
+	'Write a Post',
 	'Written by {username}',
 ];
 
