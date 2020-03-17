@@ -10,49 +10,54 @@
 </head>
 <body>
 
-<nav id="sidebar">
-	<a href="{{ path('homepage') }}">Please select a category:</a>
-	<ul>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'philosophy'}) }}"
-			   class="sidebar_link category_philosophy">{{ 'Philosophy'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'science'}) }}"
-			   class="sidebar_link category_science">{{ 'Science'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'technology'}) }}"
-			   class="sidebar_link category_technology">{{ 'Technology'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'innovation'}) }}"
-			   class="sidebar_link category_innovation">{{ 'Innovation'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'strategy'}) }}"
-			   class="sidebar_link category_strategy">{{ 'Strategy'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'politics'}) }}"
-			   class="sidebar_link category_politics">{{ 'Politics'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'philosophy'}) }}"
-			   class="sidebar_link category_religion">{{ 'Religion'|trans }}</a>
-		</li>
-		<li>
-			<a href="{{ path('view_posts', {'supercategory': 'society'}) }}"
-			   class="sidebar_link category_society">{{ 'Society'|trans }}</a>
-		</li>
-	</ul>
-
-	<footer>
+<section id="sidebar">
+	<input type="checkbox">
+	<span>≡</span>
+	<nav>
+		<a href="{{ path('homepage') }}">Please select a category:</a>
 		<ul>
-			<li><a href="">{{ 'About'|trans }}</a></li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'philosophy'}) }}"
+				   class="sidebar_link category_philosophy">{{ 'Philosophy'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'science'}) }}"
+				   class="sidebar_link category_science">{{ 'Science'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'technology'}) }}"
+				   class="sidebar_link category_technology">{{ 'Technology'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'innovation'}) }}"
+				   class="sidebar_link category_innovation">{{ 'Innovation'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'strategy'}) }}"
+				   class="sidebar_link category_strategy">{{ 'Strategy'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'politics'}) }}"
+				   class="sidebar_link category_politics">{{ 'Politics'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'philosophy'}) }}"
+				   class="sidebar_link category_religion">{{ 'Religion'|trans }}</a>
+			</li>
+			<li>
+				<a href="{{ path('view_posts', {'supercategory': 'society'}) }}"
+				   class="sidebar_link category_society">{{ 'Society'|trans }}</a>
+			</li>
 		</ul>
-	</footer>
-</nav>
+
+		<footer>
+			<ul>
+				<li><a href="">{{ 'About'|trans }}</a></li>
+			</ul>
+		</footer>
+	</nav>
+</section>
+
 
 <section id="main">
 	<header>
@@ -60,6 +65,10 @@
 		{% if app.user %}
 
 			<div id="site_title" style="visibility:hidden"><a href="{{ path('homepage') }}">Muse</a></div>
+
+			{% if app.user and app.request.get('_route') != 'new_post' %}
+				<a class="top" href="{{ path('new_post') }}">{{ 'Write a Post'|trans }}</a>
+			{% endif %}
 
 			<div id="user_info">
 				<span>{{ 'Logged in'|trans }} &nbsp;&rsaquo;&nbsp;</span>
@@ -75,8 +84,9 @@
 			<div id="site_title"><a href="{{ path('homepage') }}">Muse</a></div>
 
 			{% if app.request.get('_route') != 'register' %}
-				<a class="register" href="{{ path('register') }}">{{ 'Create an Account'|trans }}</a>
+				<a class="top" href="{{ path('register') }}">{{ 'Create an Account'|trans }}</a>
 			{% endif %}
+
 
 			<form action="{{ path('login') }}" method="post">
 				<button type="submit" tabindex="3">Login &nbsp;&rsaquo;&nbsp;</button>
