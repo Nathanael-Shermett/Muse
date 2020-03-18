@@ -1,3 +1,13 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		MUSE - MAIN STYLESHEET
+//
+//		Very big and very unruly.
+//		You probably don't want to scroll past this point.
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// Primary color palette.
 $light_beige: #DCB;
 $lighter_beige: lighten($light_beige, 10%);
 $medium_beige: darken($light_beige, 40%);
@@ -21,6 +31,7 @@ $rainbow: (
 	category_society: adjust-hue(#900, (8 / $rainbow_segments) * 360 * $multiplier),
 );
 
+// Font settings.
 $font1: "Open Sans", sans-serif;
 $font2: "Josefin Sans", serif;
 $font3: "Fira Code", monospace;
@@ -35,103 +46,61 @@ $font_size_medium: 12pt;
 $font_size_large: 16pt;
 $font_size_largest: 24pt;
 
-@mixin box()
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		HTML/BODY RESET AND STYLING
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+html
 {
-	background-color: $lighter_beige;
-	border-radius: 3px;
-	box-shadow: -2px 2px 2px rgba($medium_beige, .25);
-	color: $dark_beige;
+	box-sizing: border-box;
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
 
-	nav
+html::-webkit-scrollbar
+{
+	display: none;
+}
+
+// Reset the universal box-sizing to border-box.
+*, *:before, *:after
+{
+	box-sizing: inherit;
+	font-family: $font1;
+}
+
+// Apply nice highlighting colors to everything.
+*
+{
+	&::-moz-selection
 	{
-		background-color: $dark_beige;
-		border-bottom-left-radius: 10px;
-		border-top-right-radius: 3px;
-		box-shadow: -2px 2px 2px rgba($medium_beige, .25);
-		color: $light_beige;
-		font-family: $font2;
-		margin: 0;
-		padding: 5px 5px 5px 10px;
-		position: absolute;
-		right: 0;
-		top: 0;
-
-		ul
-		{
-			list-style-type: none;
-			margin: 0;
-			padding: 0 5px 0 0;
-
-			li
-			{
-				display: inline-block;
-				font-size: 0;
-				padding: 0 3px;
-				position: relative;
-				font-family: $font2;
-				margin: 0;
-
-				& > *
-				{
-					font-size: $font_size_small;
-				}
-
-				&:before
-				{
-					display: none;
-				}
-
-				a
-				{
-					color: $light_beige;
-
-					&:hover
-					{
-						span
-						{
-							color: $lighter_beige;
-							text-decoration: underline;
-						}
-
-						color: $light_beige;
-						text-decoration: none;
-					}
-				}
-
-				a.delete
-				{
-					color: #D99;
-				}
-
-				a.edit
-				{
-					color: #9D9;
-				}
-
-				a.delete, a.edit
-				{
-					&:hover
-					{
-						color: $lighter_beige;
-					}
-				}
-
-				a, span, time
-				{
-					font-family: inherit;
-				}
-			}
-		}
+		background-color: darken($light_beige, 10%);
+		color: #000;
 	}
 
-	&.empty *
+	&::selection
 	{
-		font-family: $font2;
-		font-size: $font_size_large;
-		text-align: center;
+		background-color: darken($light_beige, 10%);
+		color: #000;
 	}
 }
 
+body
+{
+	background-color: $light_beige;
+	margin: 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		MIXINS
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// Markdown styling. Valid size options are "medium" (default) and "small".
 @mixin markdown($size: "medium")
 {
 	a
@@ -327,51 +296,119 @@ $font_size_largest: 24pt;
 	}
 }
 
-*
+// Box styling.
+@mixin box()
 {
-	&::-moz-selection
+	background-color: $lighter_beige;
+	border-radius: 3px;
+	box-shadow: -2px 2px 2px rgba($medium_beige, .25);
+	color: $dark_beige;
+
+	// Places a menu in the top-right corner of the box.
+	// Useful for "edit" and "delete" links, among other things.
+	nav
 	{
-		background-color: darken($light_beige, 10%);
-		color: #000;
+		background-color: $dark_beige;
+		border-bottom-left-radius: 10px;
+		border-top-right-radius: 3px;
+		box-shadow: -2px 2px 2px rgba($medium_beige, .25);
+		color: $light_beige;
+		font-family: $font2;
+		margin: 0;
+		padding: 5px 5px 5px 10px;
+		position: absolute;
+		right: 0;
+		top: 0;
+
+		ul
+		{
+			list-style-type: none;
+			margin: 0;
+			padding: 0 5px 0 0;
+
+			li
+			{
+				display: inline-block;
+				font-size: 0;
+				padding: 0 3px;
+				position: relative;
+				font-family: $font2;
+				margin: 0;
+
+				& > *
+				{
+					font-size: $font_size_small;
+				}
+
+				&:before
+				{
+					display: none;
+				}
+
+				a
+				{
+					color: $light_beige;
+
+					&:hover
+					{
+						span
+						{
+							color: $lighter_beige;
+							text-decoration: underline;
+						}
+
+						color: $light_beige;
+						text-decoration: none;
+					}
+				}
+
+				a.delete
+				{
+					color: #D99;
+				}
+
+				a.edit
+				{
+					color: #9D9;
+				}
+
+				a.delete, a.edit
+				{
+					&:hover
+					{
+						color: $lighter_beige;
+					}
+				}
+
+				a, span, time
+				{
+					font-family: inherit;
+				}
+			}
+		}
 	}
 
-	&::selection
+	&.empty *
 	{
-		background-color: darken($light_beige, 10%);
-		color: #000;
+		font-family: $font2;
+		font-size: $font_size_large;
+		text-align: center;
 	}
 }
 
-html
-{
-	box-sizing: border-box;
-	overflow-x: hidden;
-	-ms-overflow-style: none;
-	scrollbar-width: none;
-}
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		SIDEBAR AREA
+//
+////////////////////////////////////////////////////////////////////////////////////////////
 
-html::-webkit-scrollbar
+// Hide the checkbox and menu icon by default. It should only be visible at small screen widths.
+#sidebar > input[type=checkbox], #sidebar > span
 {
 	display: none;
 }
 
-*, *:before, *:after
-{
-	box-sizing: inherit;
-	font-family: $font1;
-}
-
-body
-{
-	background-color: $light_beige;
-	margin: 0;
-}
-
-#sidebar > input[checkbox], #sidebar > span
-{
-	display: none;
-}
-
+// Sidebar overlay. Effectively makes the Muse overlay a foreground instead of a background.
 #sidebar nav::after
 {
 	background-attachment: fixed;
@@ -387,14 +424,8 @@ body
 	width: 25%;
 }
 
-#sidebar
-{
-	input[type=checkbox]
-	{
-		display: none;
-	}
-}
-
+// The actual menu.
+// Everything visible on the sidebar (besides the menu icon, when applicable) falls under this.
 #sidebar nav
 {
 	background-attachment: fixed;
@@ -445,6 +476,17 @@ body
 
 	li
 	{
+		a, span
+		{
+			color: $light_beige;
+			display: block;
+			font-family: $font2;
+			font-size: $font_size_large;
+			outline: none;
+			padding: 17px 30px 13px 30px;
+			text-decoration: none;
+		}
+
 		// Loop through the menu colors.
 		@each $category, $color in $rainbow
 		{
@@ -488,17 +530,7 @@ body
 		}
 	}
 
-	li a, span
-	{
-		color: $light_beige;
-		display: block;
-		font-family: $font2;
-		font-size: $font_size_large;
-		outline: none;
-		padding: 17px 30px 13px 30px;
-		text-decoration: none;
-	}
-
+	// Links at the bottom of the menu.
 	footer
 	{
 		align-self: baseline;
@@ -547,6 +579,7 @@ body
 	}
 }
 
+// Everything besides the sidebar (or everything if the sidebar is hidden).
 section#main
 {
 	display: block;
@@ -557,164 +590,141 @@ section#main
 	padding: 0 25px 100px;
 	position: relative;
 	width: 75%;
+}
 
-	& > header
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		HEADER AREA
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+section#main > header
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin: 25px 3px 25px 0;
+	position: relative;
+	width: 100%;
+
+	a
 	{
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		margin: 25px 3px 25px 0;
+		outline: none;
+	}
+
+	#site_title
+	{
+		bottom: 10px;
+		height: 30px;
+		margin: 0;
+		left: 0;
 		position: relative;
-		width: 100%;
+		visibility: visible;
 
 		a
 		{
-			outline: none;
-		}
-
-		#site_title
-		{
-			bottom: 10px;
-			height: 30px;
-			margin: 0;
-			left: 0;
-			position: relative;
-			visibility: visible;
-
-			a
-			{
-				color: rgba($medium_beige, .25);
-				font-family: $font2;
-				font-size: $font_size_largest * 1.5;
-				font-weight: normal;
-				margin: -25px;
-				padding: 25px;
-				text-decoration: none;
-			}
-
-			a:hover
-			{
-				color: rgba($medium_beige, .5);
-			}
-		}
-
-		a.top
-		{
-			background-color: $dark_beige;
-			border-radius: 5px 5px 25px 25px;
-			color: $light_beige;
+			color: rgba($medium_beige, .25);
 			font-family: $font2;
-			font-size: $font_size_medium + 2;
-			left: 50%;
-			padding: 35px 15px 15px 15px;
-			position: absolute;
+			font-size: $font_size_largest * 1.5;
+			font-weight: normal;
+			margin: -25px;
+			padding: 25px;
 			text-decoration: none;
-			top: -30px;
-			transform: translateX(-50%);
-			-o-transition: .1s;
-			-ms-transition: .1s;
-			-moz-transition: .1s;
-			-webkit-transition: .1s;
-			transition: .1s;
-
-			&:hover
-			{
-				background-color: $darker_beige;
-				padding-top: 40px;
-				color: $lighter_beige;
-			}
 		}
 
-		form
-		{
-			font-size: 0;
-			text-align: right;
-			width: 50%;
-
-			label
-			{
-				display: none;
-			}
-
-			span
-			{
-				font-size: $font_size_small;
-				color: rgba($medium_beige, .5);
-				margin: 0 10px;
-				pointer-events: none;
-				-webkit-user-select: none;
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
-			}
-
-			button
-			{
-				background-color: transparent;
-				border: none;
-				color: rgba($medium_beige, .5);
-				font-size: $font_size_small;
-				padding: 0;
-			}
-
-			button:hover
-			{
-				color: $medium_beige;
-				cursor: pointer;
-			}
-
-			button:active, button:focus
-			{
-				color: $dark_beige;
-				outline: none;
-			}
-
-			button::-moz-focus-inner
-			{
-				border: none;
-			}
-
-			input
-			{
-				background-color: $lighter_beige;
-				border-radius: 3px;
-				border-width: 0;
-				box-shadow: -2px 2px 2px rgba($medium_beige, .25);
-				color: $dark_beige;
-				margin: 0 5px;
-				padding: 5px 10px;
-				width: calc(25% - 14px);
-
-				&:focus
-				{
-					background-color: lighten($lighter_beige, 5%);
-				}
-
-				&::-moz-placeholder
-				{
-					color: $medium_beige;
-				}
-
-				&::-webkit-input-placeholder
-				{
-					color: $medium_beige;
-				}
-
-				&:-ms-input-placeholder
-				{
-					color: $medium_beige;
-				}
-			}
-		}
-
-		#user_info
-		{
-			text-align: right;
-		}
-
-		#user_info span
+		a:hover
 		{
 			color: rgba($medium_beige, .5);
+		}
+	}
+
+	// The link at the top of the screen. There's only room for one.
+	a.top
+	{
+		background-color: $dark_beige;
+		border-radius: 5px 5px 25px 25px;
+		color: $light_beige;
+		font-family: $font2;
+		font-size: $font_size_medium + 2;
+		left: 50%;
+		padding: 35px 15px 15px 15px;
+		position: absolute;
+		text-decoration: none;
+		top: -30px;
+		transform: translateX(-50%);
+		-o-transition: .1s;
+		-ms-transition: .1s;
+		-moz-transition: .1s;
+		-webkit-transition: .1s;
+		transition: .1s;
+
+		&:hover
+		{
+			background-color: $darker_beige;
+			padding-top: 40px;
+			color: $lighter_beige;
+		}
+	}
+
+	// The information about the logged-in user (top-right corner) goes here.
+	#user_info
+	{
+		text-align: right;
+	}
+
+	#user_info span
+	{
+		color: rgba($medium_beige, .5);
+		pointer-events: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	#user_info a
+	{
+		color: $medium_beige;
+		display: inline-block;
+		margin: -25px -25px -50px -125px;
+		padding: 25px 25px 50px 125px;
+		height: 30px;
+		text-decoration: none;
+	}
+
+	#user_info a:hover
+	{
+		color: $dark_beige;
+	}
+
+	#user_info img
+	{
+		border-radius: 30px;
+		box-shadow: -2px 2px 2px rgba($medium_beige, .25);
+		height: 30px;
+		margin-left: 15px;
+		opacity: 1;
+		vertical-align: middle;
+		width: 30px;
+	}
+
+	// Header form styling (if the user is not logged in).
+	form
+	{
+		font-size: 0;
+		text-align: right;
+		width: 50%;
+
+		label
+		{
+			display: none;
+		}
+
+		span
+		{
+			font-size: $font_size_small;
+			color: rgba($medium_beige, .5);
+			margin: 0 10px;
 			pointer-events: none;
 			-webkit-user-select: none;
 			-moz-user-select: none;
@@ -722,353 +732,42 @@ section#main
 			user-select: none;
 		}
 
-		#user_info a
+		button
 		{
-			color: $medium_beige;
-			display: inline-block;
-			margin: -25px -25px -50px -125px;
-			padding: 25px 25px 50px 125px;
-			height: 30px;
-			text-decoration: none;
+			background-color: transparent;
+			border: none;
+			color: rgba($medium_beige, .5);
+			font-size: $font_size_small;
+			padding: 0;
 		}
 
-		#user_info a:hover
+		button:hover
+		{
+			color: $medium_beige;
+			cursor: pointer;
+		}
+
+		button:active, button:focus
 		{
 			color: $dark_beige;
+			outline: none;
 		}
 
-		#user_info img
+		button::-moz-focus-inner
 		{
-			border-radius: 30px;
-			box-shadow: -2px 2px 2px rgba($medium_beige, .25);
-			height: 30px;
-			margin-left: 15px;
-			opacity: 1;
-			vertical-align: middle;
-			width: 30px;
-		}
-	}
-
-	main
-	{
-		align-content: center;
-		align-items: center;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		min-height: calc(100vh - 180px);
-		padding-bottom: 40px;
-
-		.message
-		{
-			background-color: $lighter_beige;
-			border-radius: 3px;
-			box-shadow: -2px 2px 2px rgba($medium_beige, .25);
-			display: block;
-			font-family: $font2;
-			font-size: $font_size_large;
-			margin-bottom: 15px;
-			padding: 15px;
-			vertical-align: middle;
-			width: 100%;
-
-			&:last-of-type
-			{
-				margin-bottom: 40px;
-			}
-
-			&.success
-			{
-				background-color: #9C9;
-			}
-
-			&.alert
-			{
-				background-color: #DDA;
-			}
-
-			&.error
-			{
-				background-color: #C99;
-			}
+			border: none;
 		}
 
-		table
-		{
-			border-collapse: collapse;
-			margin: 40px 0;
-			table-layout: fixed;
-			width: 100%;
-
-			tr
-			{
-				position: relative;
-
-				&:hover td
-				{
-					background-color: $light_beige;
-					border: 1px solid $medium_beige;
-				}
-			}
-
-			th
-			{
-				font-family: $font2;
-			}
-
-			td
-			{
-				background-clip: padding-box;
-				border: 1px solid $medium_beige;
-				font-size: $font_size_small;
-				padding: 5px;
-
-				a.cover_row
-				{
-					background: none;
-					display: block;
-					left: 0;
-					height: 100%;
-					outline: none;
-					position: absolute;
-					top: 0;
-					width: 100%;
-				}
-			}
-
-			td.truncate
-			{
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-		}
-	}
-
-	main .wrapper
-	{
-		width: 960px;
-
-		& > hr
-		{
-			margin: 20px 0 !important;
-			border-width: 0 !important;
-		}
-	}
-
-	main .box
-	{
-		@include box();
-		padding: 40px;
-		position: relative;
-		height: 100%;
-		width: 100%;
-	}
-
-	main .comment.box
-	{
-		display: flex;
-		margin-bottom: 15px;
-		overflow: auto;
-		padding: 0;
-
-		.sidebar
-		{
-			background-color: $dark_beige;
-			overflow: hidden;
-			padding: 15px;
-			text-align: center;
-			max-width: 150px;
-			min-width: 150px;
-
-			img
-			{
-				border-radius: 75px;
-				border: 3px solid $light_beige;
-				height: 75px;
-				margin-bottom: 10px;
-				transition: all .2s ease-in-out;
-				width: 75px;
-			}
-
-			a
-			{
-				color: $light_beige;
-				display: block;
-				font-family: $font2;
-				font-size: $font_size_medium;
-				outline: none;
-				text-decoration: none;
-				text-overflow: ellipsis;
-				width: 100%;
-
-				&:hover
-				{
-					color: $lighter_beige;
-
-					img
-					{
-						transform: scale(1.05);
-					}
-				}
-			}
-		}
-
-		.comment_area
-		{
-			@include markdown("small");
-			padding: 45px 30px 30px;
-		}
-	}
-
-	main .article, main .profile
-	{
-		font-size: $font_size_medium;
-		margin: 0 auto;
-		max-width: 800px;
-		padding: 40px 0;
-		width: 100%;
-
-		/* This is the article title and is separate from any user-inputted Markdown. */
-		h1:first-child
-		{
-			border-bottom: none;
-			color: #000;
-			font-family: $font2;
-			font-size: $font_size_largest + 10;
-			margin-top: 0;
-		}
-	}
-
-	main .article
-	{
-		nav ul li
-		{
-			padding: 0 5px;
-
-			& > *
-			{
-				font-size: $font_size_medium;
-			}
-		}
-	}
-
-	main .profile
-	{
-		h1, h2
-		{
-			text-align: center;
-		}
-
-		div#member_since
-		{
-			color: $medium_beige;
-			font-size: $font_size_medium;
-			font-style: italic;
-			margin: 20px 0 80px;
-			text-align: center;
-
-			time
-			{
-				font-weight: bold;
-			}
-		}
-
-		div#avatar
-		{
-			text-align: center;
-
-			img
-			{
-				border: 5px solid $light_beige;
-				border-radius: 200px;
-				height: 200px;
-				width: 200px;
-			}
-		}
-	}
-
-	main .wrapper
-	{
-		@include markdown();
-	}
-
-	main .article, main .comment_area
-	{
-		hr
-		{
-			border-bottom-color: $light_beige;
-		}
-	}
-
-	main form
-	{
-		width: 100%;
-
-		ul.error
-		{
-			background-color: #C66;
-			border-top-left-radius: 3px;
-			border-top-right-radius: 15px;
-			box-shadow: -2px 0px 2px rgba($medium_beige, .25);
-			line-height: 30px;
-			margin: 15px 0 15px 0;
-			min-height: 30px;
-			padding: 0 30px 0 15px;
-			width: 100%;
-
-			li
-			{
-				font-family: $font2;
-				list-style-type: none;
-			}
-
-			li::before
-			{
-				display: none;
-			}
-		}
-
-		ul.error + input:not([type=radio]), ul.error + select + div.selectize-control, ul.error + select, ul.error + textarea
-		{
-			border-top-left-radius: 0;
-			border-top-right-radius: 0;
-			margin-top: -15px !important;
-
-			&:not(.selectize-control)
-			{
-				border-left: 3px solid #C66;
-			}
-
-			.selectize-input
-			{
-				border-top-left-radius: 0;
-				border-left: 3px solid #C66;
-			}
-		}
-
-		input:not([type=radio]), input:not([type=checkbox]), select, textarea, button
+		input
 		{
 			background-color: $lighter_beige;
 			border-radius: 3px;
 			border-width: 0;
 			box-shadow: -2px 2px 2px rgba($medium_beige, .25);
 			color: $dark_beige;
-			display: block;
-			font-size: $font_size_large;
-			margin: 15px 0;
-			padding: 15px;
-			width: 100%;
-
-			&.highlighted
-			{
-				border-left: 5px solid $medium_beige;
-
-				&.editing
-				{
-					border-left-color: #696;
-				}
-			}
+			margin: 0 5px;
+			padding: 5px 10px;
+			width: calc(25% - 14px);
 
 			&:focus
 			{
@@ -1078,131 +777,189 @@ section#main
 			&::-moz-placeholder
 			{
 				color: $medium_beige;
-				font-family: $font2;
-				line-height: $font_size_large + 15px;
 			}
 
 			&::-webkit-input-placeholder
 			{
 				color: $medium_beige;
-				font-family: $font2;
-				line-height: $font_size_large + 15px;
 			}
 
 			&:-ms-input-placeholder
 			{
 				color: $medium_beige;
-				font-family: $font2;
-				line-height: $font_size_large + 15px;
 			}
 		}
+	}
+}
 
-		textarea
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		MAIN PAGE CONTENT AREA
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// Forces a fixed width of 960px.
+// Useful for keeping large blocks of text legible (among other things).
+.wrapper
+{
+	@include markdown();
+	width: 960px;
+
+	& > hr
+	{
+		margin: 20px 0 !important;
+		border-width: 0 !important;
+	}
+}
+
+main
+{
+	align-content: center;
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	min-height: calc(100vh - 180px);
+	padding-bottom: 40px;
+
+	// Flash messages.
+	.message
+	{
+		background-color: $lighter_beige;
+		border-radius: 3px;
+		box-shadow: -2px 2px 2px rgba($medium_beige, .25);
+		display: block;
+		font-family: $font2;
+		font-size: $font_size_large;
+		margin-bottom: 15px;
+		padding: 15px;
+		vertical-align: middle;
+		width: 100%;
+
+		&:last-of-type
 		{
-			min-height: 60px;
-			resize: vertical;
-
-			&.tall
-			{
-				height: 400px;
-			}
-
-			&.short
-			{
-				height: 200px;
-			}
+			margin-bottom: 40px;
 		}
 
-		.write_comment
+		&.success
+		{
+			background-color: #9C9;
+		}
+
+		&.alert
+		{
+			background-color: #DDA;
+		}
+
+		&.error
+		{
+			background-color: #C99;
+		}
+	}
+
+	table
+	{
+		border-collapse: collapse;
+		margin: 40px 0;
+		table-layout: fixed;
+		width: 100%;
+
+		tr
 		{
 			position: relative;
 
-			button[type=submit]
+			&:hover td
 			{
-				border-radius: 100px;
-				bottom: 0;
-				font-size: $font_size_large;
-				margin: 0;
-				padding: 5px 15px;
-				position: absolute;
-				right: 0;
-				transform: translate(calc(100% + 15px));
-
-				span
-				{
-					display: none;
-				}
-			}
-
-			button[type=submit]:hover
-			{
-				opacity: 1;
+				background-color: $light_beige;
+				border: 1px solid $medium_beige;
 			}
 		}
 
-		button
+		th
 		{
-			background-color: $dark_beige;
-			color: $light_beige;
 			font-family: $font2;
-			line-height: $font_size_large + 15px;
-			padding-top: 18px;
-			width: auto;
+		}
+
+		td
+		{
+			background-clip: padding-box;
+			border: 1px solid $medium_beige;
+			font-size: $font_size_small;
+			padding: 5px;
+
+			a.cover_row
+			{
+				background: none;
+				display: block;
+				left: 0;
+				height: 100%;
+				outline: none;
+				position: absolute;
+				top: 0;
+				width: 100%;
+			}
+		}
+
+		td.truncate
+		{
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+}
+
+.box
+{
+	@include box();
+	padding: 40px;
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+.comment.box
+{
+	display: flex;
+	margin-bottom: 15px;
+	overflow: auto;
+	padding: 0;
+
+	.sidebar
+	{
+		background-color: $dark_beige;
+		overflow: hidden;
+		padding: 15px;
+		text-align: center;
+		max-width: 150px;
+		min-width: 150px;
+
+		img
+		{
+			border-radius: 75px;
+			border: 3px solid $light_beige;
+			height: 75px;
+			margin-bottom: 10px;
+			transition: all .2s ease-in-out;
+			width: 75px;
+		}
+
+		a
+		{
+			color: $light_beige;
+			display: block;
+			font-family: $font2;
+			font-size: $font_size_medium;
+			outline: none;
+			text-decoration: none;
+			text-overflow: ellipsis;
+			width: 100%;
 
 			&:hover
 			{
-				background-color: lighten($dark_beige, 5%);
 				color: $lighter_beige;
-				cursor: pointer;
-			}
-
-			&:focus
-			{
-				background-color: lighten($dark_beige, 10%);
-			}
-		}
-
-		#edit_avatar
-		{
-			@include box();
-
-			align-items: center;
-			display: flex;
-			justify-content: space-between;
-			padding: 40px;
-			text-align: center;
-
-			div
-			{
-				font-size: $font_size_large;
-				padding-right: 80px;
-				text-align: left;
-
-				p
-				{
-
-				}
-
-				p.email
-				{
-					font-weight: bold;
-				}
-			}
-
-			a
-			{
-				flex-shrink: 0;
 
 				img
-				{
-					border: 5px solid $light_beige;
-					border-radius: 200px;
-					height: 200px;
-					transition: all .2s ease-in-out;
-					width: 200px;
-				}
-
-				&:hover img
 				{
 					transform: scale(1.05);
 				}
@@ -1210,248 +967,576 @@ section#main
 		}
 	}
 
-	main #masonry
+	.comment_area
+	{
+		@include markdown("small");
+		padding: 45px 30px 30px;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		ARTICLES (and other important pages)
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+main .article, main .profile
+{
+	font-size: $font_size_medium;
+	margin: 0 auto;
+	max-width: 800px;
+	padding: 40px 0;
+	width: 100%;
+
+	// This is the article title and is separate from any user-inputted markdown.
+	h1:first-child
+	{
+		border-bottom: none;
+		color: #000;
+		font-family: $font2;
+		font-size: $font_size_largest + 10;
+		margin-top: 0;
+	}
+}
+
+main .article
+{
+	nav ul li
+	{
+		padding: 0 5px;
+
+		& > *
+		{
+			font-size: $font_size_medium;
+		}
+	}
+}
+
+main .profile
+{
+	h1, h2
+	{
+		text-align: center;
+	}
+
+	div#member_since
+	{
+		color: $medium_beige;
+		font-size: $font_size_medium;
+		font-style: italic;
+		margin: 20px 0 80px;
+		text-align: center;
+
+		time
+		{
+			font-weight: bold;
+		}
+	}
+
+	div#avatar
+	{
+		text-align: center;
+
+		img
+		{
+			border: 5px solid $light_beige;
+			border-radius: 200px;
+			height: 200px;
+			width: 200px;
+		}
+	}
+}
+
+#edit_avatar
+{
+	@include box();
+
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	padding: 40px;
+	text-align: center;
+
+	div
+	{
+		font-size: $font_size_large;
+		padding-right: 80px;
+		text-align: left;
+
+		p
+		{
+
+		}
+
+		p.email
+		{
+			font-weight: bold;
+		}
+	}
+
+	a
+	{
+		flex-shrink: 0;
+
+		img
+		{
+			border: 5px solid $light_beige;
+			border-radius: 200px;
+			height: 200px;
+			transition: all .2s ease-in-out;
+			width: 200px;
+		}
+
+		&:hover img
+		{
+			transform: scale(1.05);
+		}
+	}
+}
+
+main .article, main .comment_area
+{
+	hr
+	{
+		border-bottom-color: $light_beige;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		MAIN FORM STYLING
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+main form
+{
+	width: 100%;
+
+	input:not([type=radio]), input:not([type=checkbox]), select, textarea, button
+	{
+		background-color: $lighter_beige;
+		border-radius: 3px;
+		border-width: 0;
+		box-shadow: -2px 2px 2px rgba($medium_beige, .25);
+		color: $dark_beige;
+		display: block;
+		font-size: $font_size_large;
+		margin: 15px 0;
+		padding: 15px;
+		width: 100%;
+
+		&.highlighted
+		{
+			border-left: 5px solid $medium_beige;
+
+			&.editing
+			{
+				border-left-color: #696;
+			}
+		}
+
+		&:focus
+		{
+			background-color: lighten($lighter_beige, 5%);
+		}
+
+		&::-moz-placeholder
+		{
+			color: $medium_beige;
+			font-family: $font2;
+			line-height: $font_size_large + 15px;
+		}
+
+		&::-webkit-input-placeholder
+		{
+			color: $medium_beige;
+			font-family: $font2;
+			line-height: $font_size_large + 15px;
+		}
+
+		&:-ms-input-placeholder
+		{
+			color: $medium_beige;
+			font-family: $font2;
+			line-height: $font_size_large + 15px;
+		}
+	}
+
+	textarea
+	{
+		min-height: 60px;
+		resize: vertical;
+
+		&.tall
+		{
+			height: 400px;
+		}
+
+		&.short
+		{
+			height: 200px;
+		}
+	}
+
+	// Comment composition box.
+	.write_comment
+	{
+		position: relative;
+
+		button[type=submit]
+		{
+			border-radius: 100px;
+			bottom: 0;
+			font-size: $font_size_large;
+			margin: 0;
+			padding: 5px 15px;
+			position: absolute;
+			right: 0;
+			transform: translate(calc(100% + 15px));
+
+			span
+			{
+				display: none;
+			}
+		}
+
+		button[type=submit]:hover
+		{
+			opacity: 1;
+		}
+	}
+
+	button
+	{
+		background-color: $dark_beige;
+		color: $light_beige;
+		font-family: $font2;
+		line-height: $font_size_large + 15px;
+		padding-top: 18px;
+		width: auto;
+
+		&:hover
+		{
+			background-color: lighten($dark_beige, 5%);
+			color: $lighter_beige;
+			cursor: pointer;
+		}
+
+		&:focus
+		{
+			background-color: lighten($dark_beige, 10%);
+		}
+	}
+
+	// Adds 1+ error messages directly above the corresponding form field.
+	ul.error
+	{
+		background-color: #C66;
+		border-top-left-radius: 3px;
+		border-top-right-radius: 15px;
+		box-shadow: -2px 0px 2px rgba($medium_beige, .25);
+		line-height: 30px;
+		margin: 15px 0 15px 0;
+		min-height: 30px;
+		padding: 0 30px 0 15px;
+		width: 100%;
+
+		li
+		{
+			font-family: $font2;
+			list-style-type: none;
+		}
+
+		li::before
+		{
+			display: none;
+		}
+	}
+
+	// Positions the form field with an error flush with the actual message.
+	ul.error + input:not([type=radio]), ul.error + select + div.selectize-control, ul.error + select, ul.error + textarea
+	{
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		margin-top: -15px !important;
+
+		&:not(.selectize-control)
+		{
+			border-left: 3px solid #C66;
+		}
+
+		.selectize-input
+		{
+			border-top-left-radius: 0;
+			border-left: 3px solid #C66;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		MASONRY / CARDS
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// A wall.
+#masonry
+{
+	width: 100%;
+}
+
+// A brick.
+#masonry .card
+{
+	@include box();
+	animation: fade_sequence .25s forwards;
+	margin-bottom: 25px;
+	max-height: 75vh;
+	opacity: 0;
+	overflow: hidden;
+	position: relative;
+	padding: 15px;
+	width: calc((100% / 2) - 20px / 2);
+
+	// The category color bar(s) at the top of the card.
+	hr.category
+	{
+		border-width: 0;
+		border-top: 3px solid $medium_beige;
+		margin: 0;
+		position: absolute;
+		top: 0;
+		width: 50%;
+	}
+
+	hr.category:nth-of-type(1)
+	{
+		border-top-left-radius: 3px;
+		left: 0;
+	}
+
+	hr.category:nth-of-type(2)
+	{
+		border-top-right-radius: 3px;
+		right: 0;
+	}
+
+	hr.full
 	{
 		width: 100%;
 	}
 
-	main #masonry .card
+	// Loop through the menu colors.
+	@each $category, $color in $rainbow
 	{
-		@keyframes fade_sequence
+		hr.category.#{$category}
 		{
-			100%
-			{
-				opacity: 1;
-			}
+			border-top-color: $color;
 		}
+	}
 
-		@include box();
-		animation: fade_sequence .25s forwards;
-		margin-bottom: 25px;
-		max-height: 75vh;
-		opacity: 0;
-		overflow: hidden;
-		position: relative;
-		padding: 15px;
-		width: calc((100% / 2) - 20px / 2);
-
-		hr.category
+	// Fade in each card, in sequence.
+	@keyframes fade_sequence
+	{
+		100%
 		{
-			border-width: 0;
-			border-top: 3px solid $medium_beige;
-			margin: 0;
-			position: absolute;
-			top: 0;
-			width: 50%;
+			opacity: 1;
 		}
+	}
 
-		hr.category:nth-of-type(1)
+	@for $i from 1 through 100
+	{
+		&:nth-child(#{$i})
 		{
-			border-top-left-radius: 3px;
-			left: 0;
+			animation-delay: .5s + .05s * $i;
 		}
+	}
 
-		hr.category:nth-of-type(2)
-		{
-			border-top-right-radius: 3px;
-			right: 0;
-		}
+	// The entire card should be clickable.
+	a.overlay
+	{
+		box-shadow: 0 -25px 50px 50px $lighter_beige inset;
+		color: $light_beige;
+		font-size: 50px;
+		height: calc(75vh + 200px);
+		left: -100px;
+		position: absolute;
+		right: 0;
+		text-align: center;
+		text-decoration: none;
+		padding-top: calc(75vh + 125px);
+		top: -200px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		width: calc(100% + 200px);
+		z-index: 999;
+	}
 
-		hr.full
-		{
-			width: 100%;
-		}
-
-		// Loop through the menu colors.
-		@each $category, $color in $rainbow
-		{
-			hr.category.#{$category}
-			{
-				border-top-color: $color;
-			}
-		}
-
-		@for $i from 1 through 100
-		{
-			&:nth-child(#{$i})
-			{
-				animation-delay: .5s + .05s * $i;
-			}
-		}
+	&:hover
+	{
+		background-color: lighten($lighter_beige, 5%);
 
 		a.overlay
 		{
-			box-shadow: 0 -25px 50px 50px $lighter_beige inset;
-			color: $light_beige;
-			font-size: 50px;
-			height: calc(75vh + 200px);
-			left: -100px;
-			position: absolute;
-			right: 0;
-			text-align: center;
-			text-decoration: none;
-			padding-top: calc(75vh + 125px);
-			top: -200px;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			width: calc(100% + 200px);
-			z-index: 999;
+			box-shadow: 0 -25px 25px 50px lighten($lighter_beige, 5%) inset;
+			color: $medium_beige;
 		}
+	}
 
-		&:hover
+	// The card header should be positioned on top of the card overlay (z-axis) but should not interfere with the
+	// clicking behavior of the overlay. Certain links within the header, however, *should* override the overlay
+	// link, hence the z-index magic.
+	header
+	{
+		pointer-events: none;
+		position: relative;
+		z-index: 1999;
+
+		.icon
 		{
-			background-color: lighten($lighter_beige, 5%);
+			display: inline-block;
+			float: right;
+			font-size: 0;
+			margin: 0 0 10px 10px;
 
-			a.overlay
+			// The icons should be clickable.
+			a
 			{
-				box-shadow: 0 -25px 25px 50px lighten($lighter_beige, 5%) inset;
-				color: $medium_beige;
-			}
-		}
-
-		header
-		{
-			pointer-events: none;
-			position: relative;
-			z-index: 9999;
-
-			.icon
-			{
-				display: inline-block;
-				float: right;
-				font-size: 0;
-				margin: 0 0 10px 10px;
-
-				a
-				{
-					opacity: .1;
-					outline: none;
-					pointer-events: all;
-					text-decoration: none;
-				}
-
-				a:hover
-				{
-					opacity: .2;
-				}
-
-				a:active
-				{
-					opacity: .3;
-				}
-
-				&.one img
-				{
-					height: 30px;
-					width: 30px;
-				}
-
-				&.two img
-				{
-					height: 20px;
-					margin-left: 5px;
-					width: 20px;
-				}
-			}
-
-			.title
-			{
-				display: block;
-				font-family: $font2;
-				font-size: $font_size_large;
-				margin-bottom: -4pt;
-			}
-
-			.author
-			{
-				display: block;
-				font-size: $font_size_small;
-				font-style: italic;
-			}
-
-			.author a
-			{
-				color: inherit;
+				opacity: .1;
 				outline: none;
 				pointer-events: all;
 				text-decoration: none;
 			}
 
-			.author a:hover
+			a:hover
 			{
-				color: $medium_beige;
+				opacity: .2;
+			}
+
+			a:active
+			{
+				opacity: .3;
+			}
+
+			&.one img
+			{
+				height: 30px;
+				width: 30px;
+			}
+
+			&.two img
+			{
+				height: 20px;
+				margin-left: 5px;
+				width: 20px;
 			}
 		}
 
-		.content
+		.title
 		{
-			@include markdown("small");
-
-			border-top: 1px solid $light_beige;
-			margin-top: 5px;
-			padding-top: 20px;
-
-			a
-			{
-				position: relative;
-				z-index: 9999;
-			}
-		}
-	}
-
-	& > footer
-	{
-		bottom: 25px;
-		color: $medium_beige;
-		display: inline-block;
-		font-size: $font_size_small;
-		margin-top: 150px;
-		opacity: .5;
-		position: absolute;
-		right: 25px;
-		text-align: right;
-		-o-transition: 1s;
-		-ms-transition: 1s;
-		-moz-transition: 1s;
-		-webkit-transition: 1s;
-		transition: 1s;
-
-		&:hover a
-		{
-			border-bottom: 1px dashed $medium_beige;
+			display: block;
+			font-family: $font2;
+			font-size: $font_size_large;
+			margin-bottom: -4pt;
 		}
 
-		a
+		.author
+		{
+			display: block;
+			font-size: $font_size_small;
+			font-style: italic;
+		}
+
+		// The author name should be clickable.
+		.author a
 		{
 			color: inherit;
+			outline: none;
+			pointer-events: all;
 			text-decoration: none;
 		}
 
-		a:hover
+		.author a:hover
 		{
-			color: $dark_beige;
+			color: $medium_beige;
 		}
 	}
 
-	footer:hover
+	// Cards should show a preview of the post's content (where applicable), but the markdown should be smaller.
+	.content
 	{
-		opacity: 1;
-	}
+		@include markdown("small");
 
-	footer::first-line
-	{
-		font-family: $font2;
-		font-size: $font_size_medium !important;
+		border-top: 1px solid $light_beige;
+		margin-top: 5px;
+		padding-top: 20px;
+
+		a
+		{
+			position: relative;
+			z-index: 9999;
+		}
 	}
 }
 
-/****************************************
-*
-*	BEGIN LOADING ICON
-*
-****************************************/
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		FOOTER AREA
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+
+section#main > footer
+{
+	bottom: 25px;
+	color: $medium_beige;
+	display: inline-block;
+	font-size: $font_size_small;
+	margin-top: 150px;
+	opacity: .5;
+	position: absolute;
+	right: 25px;
+	text-align: right;
+	-o-transition: 1s;
+	-ms-transition: 1s;
+	-moz-transition: 1s;
+	-webkit-transition: 1s;
+	transition: 1s;
+
+	&:hover a
+	{
+		border-bottom: 1px dashed $medium_beige;
+	}
+
+	a
+	{
+		color: inherit;
+		text-decoration: none;
+	}
+
+	a:hover
+	{
+		color: $dark_beige;
+	}
+}
+
+footer:hover
+{
+	opacity: 1;
+}
+
+footer::first-line
+{
+	font-family: $font2;
+	font-size: $font_size_medium !important;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//		LOADING ICON
+//
+////////////////////////////////////////////////////////////////////////////////////////////
 
 $loading_icon_size: 25vmax;
 $loading_icon_thickness: 8px;
@@ -1513,7 +1598,7 @@ $loading_icon_color2: $medium_beige;
 	transform: translate($loading_icon_size / -2, $loading_icon_size / -2) scale(1) translate($loading_icon_size / 2, $loading_icon_size / 2);
 	user-select: none;
 	width: $loading_icon_size !important;
-	z-index: 99999;
+	z-index: 3999;
 }
 
 #loading_icon div
@@ -1542,10 +1627,11 @@ $loading_icon_color2: $medium_beige;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //
-//		BEGIN BREAKPOINTS
+//		BREAKPOINTS
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+// Height breakpoints.
 @media screen and (min-height: 1000px)
 {
 	#sidebar nav::after
@@ -1635,6 +1721,7 @@ $loading_icon_color2: $medium_beige;
 	}
 }
 
+// Width breakpoints.
 @media screen and (max-width: 1500px)
 {
 	section#main main .wrapper
@@ -1684,6 +1771,7 @@ $loading_icon_color2: $medium_beige;
 	}
 }
 
+// Hide the sidebar and show the menu button.
 @media screen and (max-width: 800px)
 {
 	section#main
@@ -1768,7 +1856,7 @@ $loading_icon_color2: $medium_beige;
 	{
 		font-size: 0;
 	}
-	
+
 	#sidebar > input[checkbox]
 	{
 		bottom: 30px;
