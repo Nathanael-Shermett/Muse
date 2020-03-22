@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 02, 2020 at 03:36 AM
+-- Generation Time: Mar 22, 2020 at 12:50 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.2
 
@@ -13,9 +13,9 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
 --
@@ -29,13 +29,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `comment` (
-	`id`        int(11)                             NOT NULL,
-	`post_id`   int(11)                             NOT NULL,
-	`user_id`   int(11)                             NOT NULL,
-	`content`   longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-	`timestamp` datetime                            NOT NULL DEFAULT current_timestamp(),
-	`deleted`   tinyint(1)                                   DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int(11) NOT NULL COMMENT 'The comment ID (PK).',
+  `post_id` int(11) NOT NULL COMMENT 'The post ID (FK) that the comment belongs to.',
+  `user_id` int(11) NOT NULL COMMENT 'The user ID (FK) that wrote the comment.',
+  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The comment''s content.',
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'The time the comment was written.',
+  `deleted` tinyint(1) DEFAULT 0 COMMENT '1 = Deleted, 0 = Not Deleted'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='All post comments are stored in this table.';
 
 -- --------------------------------------------------------
 
@@ -44,8 +44,8 @@ CREATE TABLE `comment` (
 --
 
 CREATE TABLE `migration_versions` (
-	`version`     varchar(14) COLLATE utf8_unicode_ci NOT NULL,
-	`executed_at` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)'
+  `version` varchar(14) COLLATE utf8_unicode_ci NOT NULL,
+  `executed_at` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -55,14 +55,14 @@ CREATE TABLE `migration_versions` (
 --
 
 CREATE TABLE `post` (
-	`id`        int(11)                                NOT NULL,
-	`user_id`   int(11)                                NOT NULL,
-	`title`     varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-	`content`   longtext COLLATE utf8mb4_unicode_ci    NOT NULL,
-	`abstract`  longtext COLLATE utf8mb4_unicode_ci             DEFAULT NULL,
-	`timestamp` datetime                               NOT NULL,
-	`deleted`   tinyint(1)                             NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int(11) NOT NULL COMMENT 'The post ID (PK).',
+  `user_id` int(11) NOT NULL COMMENT 'The user ID (FK) that wrote the post.',
+  `title` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The post''s title.',
+  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The post''s content.',
+  `abstract` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'An abstract (summary) of the post.',
+  `timestamp` datetime NOT NULL COMMENT 'The time the post was written.',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 = Deleted, 0 = Not Deleted'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='All posts are stored in this table.';
 
 -- --------------------------------------------------------
 
@@ -71,11 +71,11 @@ CREATE TABLE `post` (
 --
 
 CREATE TABLE `post_category` (
-  `id` int(11) NOT NULL,
-  `supercategory` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `icon` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int(11) NOT NULL COMMENT 'The category ID (PK).',
+  `supercategory` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The parent category that the category falls under.',
+  `name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The category''s name.',
+  `icon` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Relative path to the category''s icon.'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The various categories that posts can fall under are stored in this table.';
 
 --
 -- Dumping data for table `post_category`
@@ -155,9 +155,9 @@ INSERT INTO `post_category` (`id`, `supercategory`, `name`, `icon`) VALUES
 --
 
 CREATE TABLE `post|post_category` (
-  `post_id` int(11) NOT NULL,
-  `post_category_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `post_id` int(11) NOT NULL COMMENT 'The post ID (FK) the category corresponds with.',
+  `post_category_id` int(11) NOT NULL COMMENT 'The post category ID (FK) the post corresponds with.'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Associative table linking the many-to-many relationships between posts and post categories.';
 
 -- --------------------------------------------------------
 
@@ -166,14 +166,14 @@ CREATE TABLE `post|post_category` (
 --
 
 CREATE TABLE `user` (
-	`id`         int(11)                                 NOT NULL,
-	`user_since` datetime                                NOT NULL,
-	`username`   varchar(25) COLLATE utf8mb4_unicode_ci  NOT NULL,
-	`password`   varchar(64) COLLATE utf8mb4_unicode_ci  NOT NULL,
-	`email`      varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
-	`is_active`  tinyint(1)                              NOT NULL,
-	`roles`      longtext COLLATE utf8mb4_unicode_ci     NOT NULL COMMENT '(DC2Type:array)'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int(11) NOT NULL COMMENT 'The user ID (PK).',
+  `user_since` datetime NOT NULL COMMENT 'The time the user was created.',
+  `username` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The user''s username.',
+  `password` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The user''s hashed password.',
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The user''s email.',
+  `is_active` tinyint(1) NOT NULL COMMENT '1 = Active, 0 = Inactive (i.e. banned)',
+  `roles` longtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Serialized array of the user''s roles.'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='All users are stored in this table.';
 
 --
 -- Indexes for dumped tables
@@ -220,7 +220,7 @@ ALTER TABLE `post|post_category`
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `UNIQ_8D93D649E7927C74` (`email`),
-	ADD UNIQUE KEY `UNIQ_8D93D649F85E0677`(`username`);
+  ADD UNIQUE KEY `UNIQ_8D93D649F85E0677` (`username`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -230,26 +230,25 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `comment`
 --
 ALTER TABLE `comment`
-	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The comment ID (PK).';
 
 --
 -- AUTO_INCREMENT for table `post`
 --
 ALTER TABLE `post`
-	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The post ID (PK).';
 
 --
 -- AUTO_INCREMENT for table `post_category`
 --
 ALTER TABLE `post_category`
-	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
-	AUTO_INCREMENT = 66;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The category ID (PK).', AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The user ID (PK).';
 
 --
 -- Constraints for dumped tables
@@ -259,7 +258,7 @@ ALTER TABLE `user`
 -- Constraints for table `comment`
 --
 ALTER TABLE `comment`
-	ADD CONSTRAINT `FK_9474526C4B89032C` FOREIGN KEY (`post_id`) REFERENCES `post`(`id`),
+  ADD CONSTRAINT `FK_9474526C4B89032C` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
   ADD CONSTRAINT `FK_9474526CA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
