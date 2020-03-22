@@ -12,6 +12,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class IndexController extends AbstractController
 {
 	/**
+	 * Index page.
+	 *
+	 * Displays posts. Allows for two optional URL parameters to filter posts by supercategory and/or category.
+	 *
+	 * @param string $supercategory
+	 * @param string $category
 	 * @Route("/", name="homepage")
 	 * @Route("{supercategory}/{category}", name="view_posts", requirements=
 	 * {
