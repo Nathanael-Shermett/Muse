@@ -20,10 +20,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserController extends AbstractController
 {
 	/**
+	 * Allows users to be edited. Also edits the user on form submit.
+	 *
+	 * @param int                          $user_id
 	 * @param Request                      $request
 	 * @param UserPasswordEncoderInterface $passwordEncoder
+	 * @param TranslatorInterface          $t
 	 * @Route("/profile/edit/{user_id}", name="edit_profile", defaults={"user_id" = NULL}, requirements={"user_id"="\d+"})
-	 * @return
 	 */
 	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
@@ -176,9 +179,11 @@ class UserController extends AbstractController
 	}
 
 	/**
-	 * @Route("/login", name="login")
+	 * Logs the user in, or presents an error if the login did not succeed.
+	 *
 	 * @param AuthenticationUtils $authenticationUtils
-	 * @return string
+	 * @param TranslatorInterface $t
+	 * @Route("/login", name="login")
 	 */
 	public function login(AuthenticationUtils $authenticationUtils, TranslatorInterface $t)
 	{
@@ -205,6 +210,9 @@ class UserController extends AbstractController
 	}
 
 	/**
+	 * Logs the user out.
+	 *
+	 * @param TranslatorInterface $t
 	 * @Route("/logout", name="logout", methods={"GET"})
 	 */
 	public function logout(TranslatorInterface $t)
@@ -213,10 +221,12 @@ class UserController extends AbstractController
 	}
 
 	/**
+	 * Allows a new user to register an account. Also creates the new user on form submit.
+	 *
 	 * @param Request                      $request
 	 * @param UserPasswordEncoderInterface $passwordEncoder
+	 * @param TranslatorInterface          $t
 	 * @Route("/register", name="register")
-	 * @return
 	 */
 	public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
@@ -252,9 +262,13 @@ class UserController extends AbstractController
 	}
 
 	/**
-	 * @param Request $request
+	 * Displays a user's profile page, if applicable.
+	 *
+	 * @param int                          $user_id
+	 * @param Request                      $request
+	 * @param UserPasswordEncoderInterface $passwordEncoder
+	 * @param TranslatorInterface          $t
 	 * @Route("/profile/view/{user_id}", name="view_profile", requirements={"user_id"="\d+"})
-	 * @return
 	 */
 	public function view($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{

@@ -16,9 +16,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PostController extends AbstractController
 {
 	/**
-	 * @param Request $request
+	 * Allows a user to write a post. Also creates the new post on form submit.
+	 *
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
 	 * @Route("/post/new", name="new_post")
-	 * @return
 	 */
 	public function new(Request $request, TranslatorInterface $t)
 	{
@@ -76,9 +78,13 @@ class PostController extends AbstractController
 	}
 
 	/**
-	 * @param Request $request
+	 * Deletes a post.
+	 *
+	 * @param int                 $post_id
+	 * @param string              $csrf_token
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
 	 * @Route("/post/delete/{post_id}/{csrf_token}", name="delete_post", defaults={"csrf_token"=""}, requirements={"post_id"="\d+"})
-	 * @return
 	 */
 	public function delete($post_id, $csrf_token, Request $request, TranslatorInterface $t)
 	{
@@ -135,9 +141,12 @@ class PostController extends AbstractController
 	}
 
 	/**
-	 * @param Request $request
+	 * Allows a post to be edited. Also edits the post on form submit.
+	 *
+	 * @param int                 $post_id
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
 	 * @Route("/post/edit/{post_id}", name="edit_post", requirements={"post_id"="\d+"})
-	 * @return
 	 */
 	public function edit($post_id, Request $request, TranslatorInterface $t)
 	{
@@ -220,10 +229,13 @@ class PostController extends AbstractController
 	}
 
 	/**
-	 * @param Request $request
+	 * Allows a post to be viewed. Also posts comments on form submit.
+	 *
+	 * @param int                 $post_id
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
 	 * @Route("/post/{post_id}", name="view_post", requirements={"post_id"="\d+"})
 	 * @Route("/post/new_comment/{post}", name="new_comment")
-	 * @return
 	 */
 	public function view($post_id, Request $request, TranslatorInterface $t)
 	{

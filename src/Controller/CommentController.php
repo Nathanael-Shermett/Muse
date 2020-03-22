@@ -16,9 +16,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class CommentController extends AbstractController
 {
 	/**
-	 * @param Request $request
+	 * Deletes a comment.
+	 *
+	 * @param int                 $comment_id
+	 * @param string              $csrf_token
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
 	 * @Route("/comment/delete/{comment_id}/{csrf_token}", name="delete_comment", defaults={"csrf_token"=""}, requirements={"comment_id"="\d+"})
-	 * @return
 	 */
 	public function delete($comment_id, $csrf_token, Request $request, TranslatorInterface $t)
 	{
@@ -109,9 +113,12 @@ class CommentController extends AbstractController
 	}
 
 	/**
-	 * @param Request $request
+	 * Allows a comment to be edited. Also edits the comment on form submit.
+	 *
+	 * @param int                 $comment_id
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
 	 * @Route("/comment/edit/{comment_id}", name="edit_comment", requirements={"comment_id"="\d+"})
-	 * @return
 	 */
 	public function edit($comment_id, Request $request, TranslatorInterface $t)
 	{
