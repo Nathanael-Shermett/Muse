@@ -80,13 +80,13 @@ class PostController extends AbstractController
 	/**
 	 * Deletes a post.
 	 *
-	 * @param int                 $post_id
-	 * @param string              $csrf_token
+	 * @param int                 $postId
+	 * @param string              $csrfToken
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
-	 * @Route("/post/delete/{post_id}/{csrf_token}", name="delete_post", defaults={"csrf_token"=""}, requirements={"post_id"="\d+"})
+	 * @Route("/post/delete/{postId}/{csrfToken}", name="delete_post", defaults={"csrfToken"=""}, requirements={"postId"="\d+"})
 	 */
-	public function delete($post_id, $csrf_token, Request $request, TranslatorInterface $t)
+	public function delete($postId, $csrfToken, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
@@ -100,9 +100,9 @@ class PostController extends AbstractController
 		$user = $this->getUser();
 
 		$entityManager = $this->getDoctrine()->getManager();
-		$post = $entityManager->getRepository(Post::class)->find($post_id);
+		$post = $entityManager->getRepository(Post::class)->find($postId);
 
-		if ($this->isCsrfTokenValid("delete-post-$post_id", $csrf_token))
+		if ($this->isCsrfTokenValid("delete-post-$postId", $csrfToken))
 		{
 			// If the post belongs to an administrator and a moderator is trying to delete it.
 			if ($post->getUser()->hasRole('ROLE_ADMIN')
@@ -111,7 +111,7 @@ class PostController extends AbstractController
 			{
 				$this->addFlash('error', $t->trans('post.delete.only_administrators_can_delete_other_administrators'));
 
-				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+				return $this->redirectToRoute('view_post', ['post_id' => $postId]);
 			}
 
 			// If the person trying to delete this post is the post's author, or a moderator.
@@ -129,26 +129,26 @@ class PostController extends AbstractController
 			{
 				$this->addFlash('error', $t->trans('post.delete.not_authorized'));
 
-				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+				return $this->redirectToRoute('view_post', ['post_id' => $postId]);
 			}
 		}
 		else
 		{
 			$this->addFlash('error', $t->trans('post.delete.csrf_error'));
 
-			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+			return $this->redirectToRoute('view_post', ['postId' => $postId]);
 		}
 	}
 
 	/**
 	 * Allows a post to be edited. Also edits the post on form submit.
 	 *
-	 * @param int                 $post_id
+	 * @param int                 $postId
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
-	 * @Route("/post/edit/{post_id}", name="edit_post", requirements={"post_id"="\d+"})
+	 * @Route("/post/edit/{postId}", name="edit_post", requirements={"postId"="\d+"})
 	 */
-	public function edit($post_id, Request $request, TranslatorInterface $t)
+	public function edit($postId, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
@@ -163,7 +163,7 @@ class PostController extends AbstractController
 
 		// Get the post to be edited.
 		$entityManager = $this->getDoctrine()->getManager();
-		$post = $entityManager->getRepository(Post::class)->find($post_id);
+		$post = $entityManager->getRepository(Post::class)->find($postId);
 
 		// If the post belongs to an administrator and a moderator is trying to delete it.
 		if ($post->getUser()->hasRole('ROLE_ADMIN')
@@ -172,7 +172,7 @@ class PostController extends AbstractController
 		{
 			$this->addFlash('error', $t->trans('post.edit.only_administrators_can_edit_other_administrators'));
 
-			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+			return $this->redirectToRoute('view_post', ['postId' => $postId]);
 		}
 
 		// If the person trying to delete this post is the post's author, or a moderator.
@@ -210,7 +210,7 @@ class PostController extends AbstractController
 
 				$this->addFlash('success', $t->trans('post.edit.success'));
 
-				return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+				return $this->redirectToRoute('view_post', ['post_id' => $postId]);
 			}
 
 			return $this->render('post/edit.html.twig', [
@@ -224,23 +224,22 @@ class PostController extends AbstractController
 		{
 			$this->addFlash('error', $t->trans('post.edit.not_authorized'));
 
-			return $this->redirectToRoute('view_post', ['post_id' => $post_id]);
+			return $this->redirectToRoute('view_post', ['postId' => $postId]);
 		}
 	}
 
 	/**
 	 * Allows a post to be viewed. Also posts comments on form submit.
 	 *
-	 * @param int                 $post_id
+	 * @param int                 $postId
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
-	 * @Route("/post/{post_id}", name="view_post", requirements={"post_id"="\d+"})
-	 * @Route("/post/new_comment/{post}", name="new_comment")
+	 * @Route("/post/{postId}", name="view_post", requirements={"postId"="\d+"})
 	 */
-	public function view($post_id, Request $request, TranslatorInterface $t)
+	public function view($postId, Request $request, TranslatorInterface $t)
 	{
 		// Get the post.
-		$post = $this->getDoctrine()->getRepository(Post::class)->find($post_id);
+		$post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
 
 		if ($post->deleted())
 		{

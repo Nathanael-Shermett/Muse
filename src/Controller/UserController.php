@@ -22,13 +22,13 @@ class UserController extends AbstractController
 	/**
 	 * Allows users to be edited. Also edits the user on form submit.
 	 *
-	 * @param int                          $user_id
+	 * @param int                          $userId
 	 * @param Request                      $request
 	 * @param UserPasswordEncoderInterface $passwordEncoder
 	 * @param TranslatorInterface          $t
-	 * @Route("/profile/edit/{user_id}", name="edit_profile", defaults={"user_id" = NULL}, requirements={"user_id"="\d+"})
+	 * @Route("/profile/edit/{userId}", name="edit_profile", defaults={"userId" = NULL}, requirements={"userId"="\d+"})
 	 */
-	public function editProfile($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
+	public function editProfile($userId, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
@@ -42,10 +42,10 @@ class UserController extends AbstractController
 		$user = $currentUser;
 
 		// The user we're editing is not you.
-		if ($user_id && $user_id != $currentUser->getId())
+		if ($userId && $userId != $currentUser->getId())
 		{
 			$entityManager = $this->getDoctrine()->getManager();
-			$user = $entityManager->getRepository(User::class)->find($user_id);
+			$user = $entityManager->getRepository(User::class)->find($userId);
 
 			// If the current user is not a moderator, redirect them.
 			if (!$currentUser->hasRole('ROLE_MODERATOR'))
@@ -169,7 +169,7 @@ class UserController extends AbstractController
 			$entityManager = $this->getDoctrine()->getManager();
 			$entityManager->flush();
 
-			return $this->redirectToRoute('edit_profile', ['user_id' => $user->getId()]);
+			return $this->redirectToRoute('edit_profile', ['userId' => $user->getId()]);
 		}
 
 		return $this->render('user/edit_profile.html.twig', [
@@ -203,10 +203,10 @@ class UserController extends AbstractController
 		// Display an error message.
 		if ($error)
 		{
-			$this->addFlash('error', 'user.login.invalid_credentials');
+			$this->addFlash('error', $t->trans('user.login.invalid_credentials'));
 		}
 
-		return $this->render('user/login.html.twig', ['last_username' => $lastUsername]);
+		return $this->render('user/login.html.twig', ['lastUsername' => $lastUsername]);
 	}
 
 	/**
@@ -264,16 +264,16 @@ class UserController extends AbstractController
 	/**
 	 * Displays a user's profile page, if applicable.
 	 *
-	 * @param int                          $user_id
+	 * @param int                          $userId
 	 * @param Request                      $request
 	 * @param UserPasswordEncoderInterface $passwordEncoder
 	 * @param TranslatorInterface          $t
-	 * @Route("/profile/view/{user_id}", name="view_profile", requirements={"user_id"="\d+"})
+	 * @Route("/profile/view/{userId}", name="view_profile", requirements={"userId"="\d+"})
 	 */
-	public function view($user_id, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
+	public function view($userId, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
 		// Get the user.
-		$user = $this->getDoctrine()->getRepository(User::class)->find($user_id);
+		$user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
 		// Throw an error if the user does not exist.
 		if (!$user)

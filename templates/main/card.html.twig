@@ -14,7 +14,7 @@
 		<hr class="category">
 	{% endif %}
 
-	<a href="{{ path('view_post', {'post_id': post.id}) }}" class="overlay">&hellip;</a>
+	<a href="{{ path('view_post', {'postId': post.id}) }}" class="overlay">&hellip;</a>
 
 	<header>
 
@@ -22,8 +22,7 @@
 
 			<span class="one icon">
 				{% for category in post.categories %}
-					<a href="{{ path('view_posts', {'supercategory': category.supercategory, 'category': category.name}) }}"
-					>
+					<a href="{{ path('view_posts', {'supercategory': category.supercategory, 'category': category.name}) }}">
 						<img src="{{ asset('images/icons/' ~ category.icon) }}"
 							 title="{{ category.name|title }}">
 					</a>
@@ -48,7 +47,7 @@
 			{{ post.title }}
 		</span>
 		<span class="author">
-			by <a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author"
+			by <a href="{{ path('view_profile', {'userId': post.user.id}) }}" rel="author"
 			>{{ post.user.username }}</a>
 		</span>
 	</header>

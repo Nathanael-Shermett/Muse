@@ -18,13 +18,13 @@ class CommentController extends AbstractController
 	/**
 	 * Deletes a comment.
 	 *
-	 * @param int                 $comment_id
-	 * @param string              $csrf_token
+	 * @param int                 $commentId
+	 * @param string              $csrfToken
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
-	 * @Route("/comment/delete/{comment_id}/{csrf_token}", name="delete_comment", defaults={"csrf_token"=""}, requirements={"comment_id"="\d+"})
+	 * @Route("/comment/delete/{commentId}/{csrfToken}", name="delete_comment", defaults={"csrfToken"=""}, requirements={"commentId"="\d+"})
 	 */
-	public function delete($comment_id, $csrf_token, Request $request, TranslatorInterface $t)
+	public function delete($commentId, $csrfToken, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
@@ -38,7 +38,7 @@ class CommentController extends AbstractController
 		$user = $this->getUser();
 
 		$entityManager = $this->getDoctrine()->getManager();
-		$comment = $entityManager->getRepository(Comment::class)->find($comment_id);
+		$comment = $entityManager->getRepository(Comment::class)->find($commentId);
 
 		// Throw an error if the comment does not exist.
 		if (!$comment)
@@ -73,7 +73,7 @@ class CommentController extends AbstractController
 			return $this->redirectToRoute('homepage');
 		}
 
-		if ($this->isCsrfTokenValid("delete-comment-$comment_id", $csrf_token))
+		if ($this->isCsrfTokenValid("delete-comment-$commentId", $csrfToken))
 		{
 			// If the comment belongs to an administrator and a moderator is trying to delete it.
 			if ($comment->getUser()->hasRole('ROLE_ADMIN')
@@ -108,19 +108,19 @@ class CommentController extends AbstractController
 		{
 			$this->addFlash('error', $t->trans('comment.delete.csrf_invalid'));
 
-			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			return $this->redirectToRoute('view_post', ['postId' => $post->getId()]);
 		}
 	}
 
 	/**
 	 * Allows a comment to be edited. Also edits the comment on form submit.
 	 *
-	 * @param int                 $comment_id
+	 * @param int                 $commentId
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
-	 * @Route("/comment/edit/{comment_id}", name="edit_comment", requirements={"comment_id"="\d+"})
+	 * @Route("/comment/edit/{commentId}", name="edit_comment", requirements={"commentId"="\d+"})
 	 */
-	public function edit($comment_id, Request $request, TranslatorInterface $t)
+	public function edit($commentId, Request $request, TranslatorInterface $t)
 	{
 		// If the user is not logged in, redirect them.
 		if (!$this->getUser())
@@ -135,7 +135,7 @@ class CommentController extends AbstractController
 
 		// Get the comment to be edited.
 		$entityManager = $this->getDoctrine()->getManager();
-		$comment = $entityManager->getRepository(Comment::class)->find($comment_id);
+		$comment = $entityManager->getRepository(Comment::class)->find($commentId);
 
 		// Throw an error if the comment does not exist.
 		if (!$comment)
@@ -177,7 +177,7 @@ class CommentController extends AbstractController
 		{
 			$this->addFlash('error', $t->trans('comment.edit.only_administrators_can_edit_other_administrators'));
 
-			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			return $this->redirectToRoute('view_post', ['postId' => $post->getId()]);
 		}
 
 		// If the person trying to edit this comment is the comment's author, or a moderator.
@@ -202,7 +202,7 @@ class CommentController extends AbstractController
 				$entityManager->flush();
 
 				// Redirect to this page (effectively resetting form values).
-				return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+				return $this->redirectToRoute('view_post', ['postId' => $post->getId()]);
 			}
 
 			// Get the comments.
@@ -221,7 +221,7 @@ class CommentController extends AbstractController
 		{
 			$this->addFlash('error', $t->trans('comment.edit.not_authorized'));
 
-			return $this->redirectToRoute('view_post', ['post_id' => $post->getId()]);
+			return $this->redirectToRoute('view_post', ['postId' => $post->getId()]);
 		}
 	}
 }

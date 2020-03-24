@@ -27,7 +27,7 @@
 		<nav>
 			<ul>
 				<li>
-					<a href="{{ path('view_profile', {'user_id': post.user.id}) }}" rel="author">
+					<a href="{{ path('view_profile', {'userId': post.user.id}) }}" rel="author">
 						{% trans with {'{username}': '</span>' ~ post.user.username ~ '</span>'} %}
 							Written by {username}
 						{% endtrans %}
@@ -40,10 +40,10 @@
 				{% if app.user and app.user.id == post.user.id
 					or (is_granted('ROLE_ADMIN') or (is_granted('ROLE_MODERATOR') and not post.user.hasRole('ROLE_ADMIN'))) %}
 					<li>
-						<a href="{{ path('edit_post', {'post_id': post.id}) }}" class="edit">{{ 'Edit'|trans }}</a>
+						<a href="{{ path('edit_post', {'postId': post.id}) }}" class="edit">{{ 'Edit'|trans }}</a>
 					</li>
 					<li>
-						<a href="{{ path('delete_post', {'post_id': post.id, 'csrf_token': csrf_token('delete-post-' ~ post.id)}) }}"
+						<a href="{{ path('delete_post', {'postId': post.id, 'csrfToken': csrf_token('delete-post-' ~ post.id)}) }}"
 						   class="delete">{{ 'Delete'|trans }}</a>
 					</li>
 				{% endif %}
@@ -71,7 +71,7 @@
 					<nav>
 						<ul>
 							<li>
-								<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author">
+								<a href="{{ path('view_profile', {'userId': comment.user.id}) }}" rel="author">
 									{% trans with {'{username}': '</span>' ~ comment.user.username ~ '</span>'} %}
 										Written by {username}
 									{% endtrans %}
@@ -83,11 +83,11 @@
 							{% if app.user and app.user.id == comment.user.id
 								or (is_granted('ROLE_ADMIN') or (is_granted('ROLE_MODERATOR') and not comment.user.hasRole('ROLE_ADMIN'))) %}
 								<li>
-									<a href="{{ path('edit_comment', {'comment_id': comment.id}) }}"
+									<a href="{{ path('edit_comment', {'commentId': comment.id}) }}"
 									   class="edit">{{ 'Edit'|trans }}</a>
 								</li>
 								<li>
-									<a href="{{ path('delete_comment', {'comment_id': comment.id, 'csrf_token': csrf_token('delete-comment-' ~ comment.id)}) }}"
+									<a href="{{ path('delete_comment', {'commentId': comment.id, 'csrfToken': csrf_token('delete-comment-' ~ comment.id)}) }}"
 									   class="delete">{{ 'Delete'|trans }}</a>
 								</li>
 							{% endif %}
@@ -95,7 +95,7 @@
 					</nav>
 
 					<div class="sidebar">
-						<a href="{{ path('view_profile', {'user_id': comment.user.id}) }}" rel="author">
+						<a href="{{ path('view_profile', {'userId': comment.user.id}) }}" rel="author">
 							<img
 								src="https://www.gravatar.com/avatar/{{ comment.user.email|lower|md5 }}?r=pg&amp;d=retro&amp;s=100"
 								alt="">
