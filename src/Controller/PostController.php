@@ -7,7 +7,9 @@ use App\Form\PostType;
 use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\PostCategory;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,6 +23,8 @@ class PostController extends AbstractController
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
 	 * @Route("/post/new", name="new_post")
+	 * @return RedirectResponse|Response
+	 * @throws Exception
 	 */
 	public function new(Request $request, TranslatorInterface $t)
 	{
@@ -85,6 +89,7 @@ class PostController extends AbstractController
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
 	 * @Route("/post/delete/{postId}/{csrfToken}", name="delete_post", defaults={"csrfToken"=""}, requirements={"postId"="\d+"})
+	 * @return RedirectResponse
 	 */
 	public function delete($postId, $csrfToken, Request $request, TranslatorInterface $t)
 	{
@@ -141,12 +146,93 @@ class PostController extends AbstractController
 	}
 
 	/**
+	 * Allows a post to be viewed. Also posts comments on form submit.
+	 *
+	 * @param int                 $postId
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
+	 * @Route("/post/{postId}", name="view_post", requirements={"postId"="\d+"})
+	 * @return RedirectResponse|Response
+	 * @throws Exception
+	 */
+	public function view($postId, Request $request, TranslatorInterface $t)
+	{
+		// Get the post.
+		$post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
+
+		if ($post->deleted())
+		{
+			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		// Throw an error if the post does not exist.
+		if (!$post)
+		{
+			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		// Get the comments.
+		$comments = $post->getComments();
+
+		// If the user is logged in, build the comment form.
+		if ($this->getUser())
+		{
+			// Get the user.
+			$user = $this->getUser();
+
+			// Build the comment form.
+			$comment = new Comment();
+			$form = $this->createForm(CommentType::class, $comment);
+			$comment->setTimestamp(new \DateTime());
+			$comment->setPost($post);
+			$comment->setUser($user);
+			$comment->setDeleted(FALSE);
+
+			// Handle the submission (will only happen on POST)
+			$form->handleRequest($request);
+			if ($form->isSubmitted() && $form->isValid())
+			{
+				// Save the comment.
+				$entityManager = $this->getDoctrine()->getManager();
+				$entityManager->persist($comment);
+				$entityManager->flush();
+
+				// Show a success message.
+				$this->addFlash('success', $t->trans('comment.new.success'));
+
+				// Redirect to this page (effectively resetting form values).
+				return $this->redirect($request->getUri());
+			}
+
+			// Render everything.
+			return $this->render('post/view.html.twig', [
+				'post' => $post,
+				'form' => $form->createView(),
+				'comments' => $comments,
+			]);
+		}
+		else
+		{
+			// Render everything.
+			return $this->render('post/view.html.twig', [
+				'post' => $post,
+				'comments' => $comments,
+			]);
+		}
+	}
+
+	/**
 	 * Allows a post to be edited. Also edits the post on form submit.
 	 *
 	 * @param int                 $postId
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
 	 * @Route("/post/edit/{postId}", name="edit_post", requirements={"postId"="\d+"})
+	 * @return RedirectResponse|Response
 	 */
 	public function edit($postId, Request $request, TranslatorInterface $t)
 	{
@@ -225,84 +311,6 @@ class PostController extends AbstractController
 			$this->addFlash('error', $t->trans('post.edit.not_authorized'));
 
 			return $this->redirectToRoute('view_post', ['postId' => $postId]);
-		}
-	}
-
-	/**
-	 * Allows a post to be viewed. Also posts comments on form submit.
-	 *
-	 * @param int                 $postId
-	 * @param Request             $request
-	 * @param TranslatorInterface $t
-	 * @Route("/post/{postId}", name="view_post", requirements={"postId"="\d+"})
-	 */
-	public function view($postId, Request $request, TranslatorInterface $t)
-	{
-		// Get the post.
-		$post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
-
-		if ($post->deleted())
-		{
-			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
-
-			return $this->redirectToRoute('homepage');
-		}
-
-		// Throw an error if the post does not exist.
-		if (!$post)
-		{
-			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
-
-			return $this->redirectToRoute('homepage');
-		}
-
-		// Get the comments.
-		$comments = $post->getComments();
-
-		// If the user is logged in, build the comment form.
-		if ($this->getUser())
-		{
-			// Get the user.
-			$user = $this->getUser();
-
-			// Build the comment form.
-			$comment = new Comment();
-			$form = $this->createForm(CommentType::class, $comment);
-			$comment->setTimestamp(new \DateTime());
-			$comment->setPost($post);
-			$comment->setUser($user);
-			$comment->setDeleted(FALSE);
-
-			// Handle the submission (will only happen on POST)
-			$form->handleRequest($request);
-			if ($form->isSubmitted() && $form->isValid())
-			{
-				// Save the comment.
-				$entityManager = $this->getDoctrine()->getManager();
-				$entityManager->persist($comment);
-				$entityManager->flush();
-
-				// Show a success message.
-				$this->addFlash('success', $t->trans('comment.new.success'));
-
-				// Redirect to this page (effectively resetting form values).
-				return $this->redirect($request->getUri());
-			}
-
-			// Render everything.
-			return $this->render('post/view.html.twig', [
-				'post' => $post,
-				'form' => $form->createView(),
-				'comments' => $comments,
-			]);
-		}
-		else
-		{
-			// Render everything.
-			return $this->render('post/view.html.twig', [
-				'post' => $post,
-				'comments' => $comments,
-			]);
 		}
 	}
 }

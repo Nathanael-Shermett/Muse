@@ -8,6 +8,7 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\PostCategory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,6 +24,7 @@ class CommentController extends AbstractController
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
 	 * @Route("/comment/delete/{commentId}/{csrfToken}", name="delete_comment", defaults={"csrfToken"=""}, requirements={"commentId"="\d+"})
+	 * @return RedirectResponse
 	 */
 	public function delete($commentId, $csrfToken, Request $request, TranslatorInterface $t)
 	{
@@ -119,6 +121,7 @@ class CommentController extends AbstractController
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
 	 * @Route("/comment/edit/{commentId}", name="edit_comment", requirements={"commentId"="\d+"})
+	 * @return RedirectResponse|Response
 	 */
 	public function edit($commentId, Request $request, TranslatorInterface $t)
 	{

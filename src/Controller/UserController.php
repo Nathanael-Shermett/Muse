@@ -9,8 +9,11 @@ use App\Entity\User;
 use App\Form\CommentType;
 use App\Form\EditProfileType;
 use App\Form\RegistrationFormType;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,6 +30,7 @@ class UserController extends AbstractController
 	 * @param UserPasswordEncoderInterface $passwordEncoder
 	 * @param TranslatorInterface          $t
 	 * @Route("/profile/edit/{userId}", name="edit_profile", defaults={"userId" = NULL}, requirements={"userId"="\d+"})
+	 * @return RedirectResponse|Response
 	 */
 	public function editProfile($userId, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
@@ -184,6 +188,7 @@ class UserController extends AbstractController
 	 * @param AuthenticationUtils $authenticationUtils
 	 * @param TranslatorInterface $t
 	 * @Route("/login", name="login")
+	 * @return Response
 	 */
 	public function login(AuthenticationUtils $authenticationUtils, TranslatorInterface $t)
 	{
@@ -214,10 +219,11 @@ class UserController extends AbstractController
 	 *
 	 * @param TranslatorInterface $t
 	 * @Route("/logout", name="logout", methods={"GET"})
+	 * @throws Exception
 	 */
 	public function logout(TranslatorInterface $t)
 	{
-		throw new \Exception($t->trans('user.login.logout_success'));
+		throw new Exception($t->trans('user.login.logout_success'));
 	}
 
 	/**
@@ -227,6 +233,7 @@ class UserController extends AbstractController
 	 * @param UserPasswordEncoderInterface $passwordEncoder
 	 * @param TranslatorInterface          $t
 	 * @Route("/register", name="register")
+	 * @return RedirectResponse|Response
 	 */
 	public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
@@ -269,6 +276,7 @@ class UserController extends AbstractController
 	 * @param UserPasswordEncoderInterface $passwordEncoder
 	 * @param TranslatorInterface          $t
 	 * @Route("/profile/view/{userId}", name="view_profile", requirements={"userId"="\d+"})
+	 * @return RedirectResponse|Response
 	 */
 	public function view($userId, Request $request, UserPasswordEncoderInterface $passwordEncoder, TranslatorInterface $t)
 	{
