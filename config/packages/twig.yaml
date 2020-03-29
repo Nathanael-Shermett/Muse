@@ -1,7 +1,7 @@
 twig:
-    exception_controller: null
-    form_themes:
-    - 'form/form_errors.html.twig'
-    paths: ['%kernel.project_dir%/templates']
-    debug: '%kernel.debug%'
-    strict_variables: '%kernel.debug%'
+  exception_controller: null
+  form_themes:
+  - 'form/form_errors.html.twig'
+  paths: ['%kernel.project_dir%/templates']
+  debug:                '%kernel.debug%'
+  strict_variables:     '%kernel.debug%'
