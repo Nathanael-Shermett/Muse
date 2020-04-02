@@ -14,8 +14,11 @@ $(document).ready(function()
 		if (!e.ctrlKey && !e.altKey && !e.shiftKey
 			&& $('#loading_icon').css('opacity') <= 0)
 		{
-			$('main').fadeTo('fast', .25);
-			$('#loading_icon').fadeTo(500, 1);
+			setTimeout(function()
+			{
+				$('main').fadeTo('fast', .25);
+				$('#loading_icon').fadeTo(500, 1);
+			}, 1000);
 		}
 	});
 
