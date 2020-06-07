@@ -16,8 +16,13 @@
 
 		<div class="wrapper">
 			<div class="box empty">
-				<p>No posts were found in the <b>{{ (category is empty ? supercategory : category)|humanize|trans }}</b>
-					category.</p>
+				{% if category is empty and supercategory is empty %}
+					<p>No posts were found. Literally none!</p>
+				{% else %}
+					<p>No posts were found in the
+						<b>{{ (category is empty ? supercategory : category)|humanize|trans }}</b>
+						category.</p>
+				{% endif %}
 				<p><a href="{{ path('new_post') }}">Why not write the first?</a></p>
 			</div>
 		</div>
