@@ -26,7 +26,7 @@ class IndexController extends AbstractController
 	 * })
 	 * @return Response
 	 */
-	public function index(string $supercategory = NULL, string $category = NULL)
+	public function index($supercategory = '', $category = '')
 	{
 		$posts = $this->getDoctrine()->getRepository(Post::class)->findByCategory($supercategory, $category);
 
