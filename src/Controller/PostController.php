@@ -23,8 +23,8 @@ class PostController extends AbstractController
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
 	 * @Route("/post/new", name="new_post")
-	 * @return RedirectResponse|Response
 	 * @throws Exception
+	 * @return RedirectResponse|Response
 	 */
 	public function new(Request $request, TranslatorInterface $t)
 	{
@@ -56,7 +56,11 @@ class PostController extends AbstractController
 			$content = $data['content'];
 			$abstract = $data['abstract'];
 			$categories[0] = $this->getDoctrine()->getRepository(PostCategory::class)->find($data['categories'][0]);
-			$categories[1] = $this->getDoctrine()->getRepository(PostCategory::class)->find($data['categories'][1]);
+
+			if (isset($data['categories'][1]))
+			{
+				$categories[1] = $this->getDoctrine()->getRepository(PostCategory::class)->find($data['categories'][1]);
+			}
 
 			// Save the post.
 			$post = new Post();
@@ -67,7 +71,11 @@ class PostController extends AbstractController
 			$post->setAbstract($abstract);
 			$post->setDeleted(FALSE);
 			$post->addCategory($categories[0]);
-			$post->addCategory($categories[1]);
+
+			if (isset($categories[1]))
+			{
+				$post->addCategory($categories[1]);
+			}
 
 			$entityManager->persist($post);
 			$entityManager->flush();
@@ -88,7 +96,8 @@ class PostController extends AbstractController
 	 * @param string              $csrfToken
 	 * @param Request             $request
 	 * @param TranslatorInterface $t
-	 * @Route("/post/delete/{postId}/{csrfToken}", name="delete_post", defaults={"csrfToken"=""}, requirements={"postId"="\d+"})
+	 * @Route("/post/delete/{postId}/{csrfToken}", name="delete_post", defaults={"csrfToken"=""},
+	 *                                             requirements={"postId"="\d+"})
 	 * @return RedirectResponse
 	 */
 	public function delete($postId, $csrfToken, Request $request, TranslatorInterface $t)
@@ -116,7 +125,7 @@ class PostController extends AbstractController
 			{
 				$this->addFlash('error', $t->trans('post.delete.only_administrators_can_delete_other_administrators'));
 
-				return $this->redirectToRoute('view_post', ['post_id' => $postId]);
+				return $this->redirectToRoute('view_post', ['postId' => $postId]);
 			}
 
 			// If the person trying to delete this post is the post's author, or a moderator.
@@ -134,7 +143,7 @@ class PostController extends AbstractController
 			{
 				$this->addFlash('error', $t->trans('post.delete.not_authorized'));
 
-				return $this->redirectToRoute('view_post', ['post_id' => $postId]);
+				return $this->redirectToRoute('view_post', ['postId' => $postId]);
 			}
 		}
 		else
@@ -142,86 +151,6 @@ class PostController extends AbstractController
 			$this->addFlash('error', $t->trans('post.delete.csrf_error'));
 
 			return $this->redirectToRoute('view_post', ['postId' => $postId]);
-		}
-	}
-
-	/**
-	 * Allows a post to be viewed. Also posts comments on form submit.
-	 *
-	 * @param int                 $postId
-	 * @param Request             $request
-	 * @param TranslatorInterface $t
-	 * @Route("/post/{postId}", name="view_post", requirements={"postId"="\d+"})
-	 * @return RedirectResponse|Response
-	 * @throws Exception
-	 */
-	public function view($postId, Request $request, TranslatorInterface $t)
-	{
-		// Get the post.
-		$post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
-
-		if ($post->deleted())
-		{
-			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
-
-			return $this->redirectToRoute('homepage');
-		}
-
-		// Throw an error if the post does not exist.
-		if (!$post)
-		{
-			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
-
-			return $this->redirectToRoute('homepage');
-		}
-
-		// Get the comments.
-		$comments = $post->getComments();
-
-		// If the user is logged in, build the comment form.
-		if ($this->getUser())
-		{
-			// Get the user.
-			$user = $this->getUser();
-
-			// Build the comment form.
-			$comment = new Comment();
-			$form = $this->createForm(CommentType::class, $comment);
-			$comment->setTimestamp(new \DateTime());
-			$comment->setPost($post);
-			$comment->setUser($user);
-			$comment->setDeleted(FALSE);
-
-			// Handle the submission (will only happen on POST)
-			$form->handleRequest($request);
-			if ($form->isSubmitted() && $form->isValid())
-			{
-				// Save the comment.
-				$entityManager = $this->getDoctrine()->getManager();
-				$entityManager->persist($comment);
-				$entityManager->flush();
-
-				// Show a success message.
-				$this->addFlash('success', $t->trans('comment.new.success'));
-
-				// Redirect to this page (effectively resetting form values).
-				return $this->redirect($request->getUri());
-			}
-
-			// Render everything.
-			return $this->render('post/view.html.twig', [
-				'post' => $post,
-				'form' => $form->createView(),
-				'comments' => $comments,
-			]);
-		}
-		else
-		{
-			// Render everything.
-			return $this->render('post/view.html.twig', [
-				'post' => $post,
-				'comments' => $comments,
-			]);
 		}
 	}
 
@@ -296,7 +225,7 @@ class PostController extends AbstractController
 
 				$this->addFlash('success', $t->trans('post.edit.success'));
 
-				return $this->redirectToRoute('view_post', ['post_id' => $postId]);
+				return $this->redirectToRoute('view_post', ['postId' => $postId]);
 			}
 
 			return $this->render('post/edit.html.twig', [
@@ -311,6 +240,86 @@ class PostController extends AbstractController
 			$this->addFlash('error', $t->trans('post.edit.not_authorized'));
 
 			return $this->redirectToRoute('view_post', ['postId' => $postId]);
+		}
+	}
+
+	/**
+	 * Allows a post to be viewed. Also posts comments on form submit.
+	 *
+	 * @param int                 $postId
+	 * @param Request             $request
+	 * @param TranslatorInterface $t
+	 * @Route("/post/{postId}", name="view_post", requirements={"postId"="\d+"})
+	 * @throws Exception
+	 * @return RedirectResponse|Response
+	 */
+	public function view($postId, Request $request, TranslatorInterface $t)
+	{
+		// Get the post.
+		$post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
+
+		if ($post->deleted())
+		{
+			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		// Throw an error if the post does not exist.
+		if (!$post)
+		{
+			$this->addFlash('error', $t->trans('post.view.does_not_exist'));
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		// Get the comments.
+		$comments = $post->getComments();
+
+		// If the user is logged in, build the comment form.
+		if ($this->getUser())
+		{
+			// Get the user.
+			$user = $this->getUser();
+
+			// Build the comment form.
+			$comment = new Comment();
+			$form = $this->createForm(CommentType::class, $comment);
+			$comment->setTimestamp(new \DateTime());
+			$comment->setPost($post);
+			$comment->setUser($user);
+			$comment->setDeleted(FALSE);
+
+			// Handle the submission (will only happen on POST)
+			$form->handleRequest($request);
+			if ($form->isSubmitted() && $form->isValid())
+			{
+				// Save the comment.
+				$entityManager = $this->getDoctrine()->getManager();
+				$entityManager->persist($comment);
+				$entityManager->flush();
+
+				// Show a success message.
+				$this->addFlash('success', $t->trans('comment.new.success'));
+
+				// Redirect to this page (effectively resetting form values).
+				return $this->redirect($request->getUri());
+			}
+
+			// Render everything.
+			return $this->render('post/view.html.twig', [
+				'post' => $post,
+				'form' => $form->createView(),
+				'comments' => $comments,
+			]);
+		}
+		else
+		{
+			// Render everything.
+			return $this->render('post/view.html.twig', [
+				'post' => $post,
+				'comments' => $comments,
+			]);
 		}
 	}
 }
